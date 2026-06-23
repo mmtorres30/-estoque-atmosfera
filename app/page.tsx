@@ -53,7 +53,7 @@ const TD=({v,style}:{v:any,style?:any})=><td style={{padding:'9px 12px',color:G2
 const TblEst=({loc}:{loc:string})=>{
 const items=Object.entries(estLoc(loc)).filter(([,v])=>v>0)
 if(!items.length)return <p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto em estoque</p>
-return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Produto','Quantidade'].map(h=><react key={h}>{TH(h)}</react>)}</tr></thead><tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/></tr>)}</tbody></table>
+return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Produto','Quantidade'].map(h=><th key={h} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead><tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/></tr>)}</tbody></table>
 }
 const navItems=[
 {id:'dashboard',icon:'⊞',label:'Painel'},
@@ -140,7 +140,7 @@ if(aba==='dashboard')return <>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>ÚLTIMAS MOVIMENTAÇÕES</p>
 {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
 <div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino'].map(h=><react key={h}>{TH(h)}</react>)}</tr></thead>
+<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino'].map(h=><th key={h} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead>
 <tbody>{movs.slice(0,8).map(m=><tr key={m.id}>
 <TD v={<Bdg tipo={m.tipo}/>}/>
 <TD v={fdt(m.data)} style={{whiteSpace:'nowrap',fontSize:11}}/>
@@ -181,7 +181,7 @@ if(aba==='historico')return <div style={sC}>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>
 {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:
 <div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs'].map(h=><react key={h}>{TH(h)}</react>)}</tr></thead>
+<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs'].map(h=><th key={h} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead>
 <tbody>{movs.map(m=><tr key={m.id}>
 <TD v={<Bdg tipo={m.tipo}/>}/><TD v={fdt(m.data)} style={{whiteSpace:'nowrap',fontSize:11}}/>
 <TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/>
