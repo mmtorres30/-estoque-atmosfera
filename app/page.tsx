@@ -169,7 +169,7 @@ if(aba==='empresas')return <>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>
 {emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:
 <table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map((h,i)=><react key={i}>{TH(h)}</react>)}</tr></thead>
+<thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map((h,i)=><th key={i} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead>
 <tbody>{emps.map(e=><tr key={e.id}>
 {[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}
 <TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/>
