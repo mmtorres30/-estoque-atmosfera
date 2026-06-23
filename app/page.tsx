@@ -1,9 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 const LOC:Record<string,string>={central:'Estoque Central',frisa:'1° Andar Frisa',terceiro:'3° Andar',barfrisa:'Bar Frisa',barboate:'Bar Boate',barterceiro:'Bar 3° Andar',empresa:'Fornecedora'}
-const PRODS=['Água mineral 500ml','Água mineral 1,5L','Refrigerante lata','Refrigerante 600ml','Refrigerante 2L','Barril de chopp 30L','Barril de chopp 50L','Whisky 750ml','Vodka 750ml','Gin 750ml','Energético lata','Suco caixinha','Cerveja lata','Cerveja long neck','Vinho tinto 750ml','Vinho branco 750ml','Espumante 750ml']
 const UNIDS=['unidade(s)','caixa(s)','fardo(s)','barril(is)','garrafa(s)','lata(s)']
-const G="#C9A84C",G2="#F0D080",G3="#8B6914",BG="#0a0800",BG2="#110e02",BG3="#1a1608",BOR="#2e2810"
+const G='#C9A84C',G2='#F0D080',G3='#8B6914',BG='#0a0800',BG2='#110e02',BG3='#1a1608',BOR='#2e2810'
+const fmtR=(v:number)=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})
+
 export default function App(){
 const [user,setUser]=useState<any>(null)
 const [lu,setLu]=useState(''),[lp,setLp]=useState('')
@@ -11,14 +12,25 @@ const [aba,setAba]=useState('dashboard')
 const [movs,setMovs]=useState<any[]>([])
 const [ests,setEsts]=useState<any[]>([])
 const [emps,setEmps]=useState<any[]>([])
+const [prods,setProds]=useState<any[]>([])
 const [toast,setToast]=useState(''),[toastE,setToastE]=useState(false)
 const [form,setForm]=useState<any>({})
+const [nfFile,setNfFile]=useState<string|null>(null)
+const fileRef=useRef<HTMLInputElement>(null)
+
 const showT=(m:string,e=false)=>{setToast(m);setToastE(e);setTimeout(()=>setToast(''),3000)}
 const load=async()=>{
-const[m,e,em]=await Promise.all([fetch('/api/movimentos').then(r=>r.json()),fetch('/api/estoques').then(r=>r.json()),fetch('/api/empresas').then(r=>r.json())])
-setMovs(Array.isArray(m)?m:[]);setEsts(Array.isArray(e)?e:[]);setEmps(Array.isArray(em)?em:[])
+const[m,e,em,pr]=await Promise.all([
+fetch('/api/movimentos').then(r=>r.json()),
+fetch('/api/estoques').then(r=>r.json()),
+fetch('/api/empresas').then(r=>r.json()),
+fetch('/api/produtos').then(r=>r.json()),
+])
+setMovs(Array.isArray(m)?m:[]);setEsts(Array.isArray(e)?e:[])
+setEmps(Array.isArray(em)?em:[]);setProds(Array.isArray(pr)?pr:[])
 }
 useEffect(()=>{if(user)load()},[user])
+
 const login=async()=>{
 const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:lu,senha:lp})})
 const d=await r.json();if(!r.ok){showT(d.error,true);return};setUser(d.usuario)
@@ -26,34 +38,62 @@ const d=await r.json();if(!r.ok){showT(d.error,true);return};setUser(d.usuario)
 const canEdit=(s:string)=>user?.perfil==='admin'||user?.perfil===s
 const estLoc=(loc:string)=>{const o:Record<string,number>={};ests.filter(e=>e.local===loc).forEach(e=>{o[e.produto]=e.quantidade});return o}
 const totLoc=(loc:string)=>ests.filter(e=>e.local===loc).reduce((a,e)=>a+e.quantidade,0)
+
 const reg=async(tipo:string,dados:any)=>{
 const r=await fetch('/api/movimentos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo,...dados})})
 const d=await r.json();if(!r.ok){showT(d.error||'Erro',true);return false}
-showT('Registrado!');load();setForm({});return true
+showT('Registrado com sucesso!');load();setForm({});setNfFile(null);return true
 }
 const cadEmp=async()=>{
 if(!form.cod_produto||!form.documento||!form.nome){showT('Preencha os campos obrigatórios',true);return}
 const r=await fetch('/api/empresas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)})
-if(!r.ok){showT('Erro',true);return};showT('Empresa cadastrada!');load();setForm({})
+if(!r.ok){showT('Erro ao cadastrar',true);return};showT('Empresa cadastrada!');load();setForm({})
 }
-const delEmp=async(id:string)=>{await fetch('/api/empresas',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});showT('Removida');load()}
+const delEmp=async(id:string)=>{
+await fetch('/api/empresas',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})})
+showT('Removida');load()
+}
+const cadProd=async()=>{
+if(!form.prod_nome){showT('Digite o nome do produto',true);return}
+const r=await fetch('/api/produtos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:form.prod_nome,categoria:form.prod_cat||'',unidade_padrao:form.prod_unid||'unidade(s)'})})
+if(!r.ok){showT('Erro ou produto já existe',true);return};showT('Produto cadastrado!');load();setForm({})
+}
+const delProd=async(id:string)=>{
+await fetch('/api/produtos',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})})
+showT('Produto removido');load()
+}
+const handleFile=(e:React.ChangeEvent<HTMLInputElement>)=>{
+const file=e.target.files?.[0];if(!file)return
+const reader=new FileReader()
+reader.onload=()=>setNfFile(file.name)
+reader.readAsDataURL(file)
+f('nf_arquivo',file.name)
+}
 const f=(k:string,v:any)=>setForm((p:any)=>({...p,[k]:v}))
+const calcTotal=(qty:string,unit:string)=>{
+const q=parseFloat(qty)||0,u=parseFloat(unit)||0
+if(q&&u)f('valor_total',(q*u).toFixed(2))
+}
 const fdt=(dt:string)=>new Date(dt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
-const sI:any={width:'100%',height:38,border:`1px solid ${BOR}`,borderRadius:6,padding:'0 12px',fontSize:13,background:BG2,color:G2,outline:'none'}
+
+const sI:any={width:'100%',height:38,border:`1px solid ${BOR}`,borderRadius:6,padding:'0 12px',fontSize:13,background:BG2,color:G2,outline:'none',boxSizing:'border-box'}
 const sC:any={background:BG3,borderRadius:10,border:`1px solid ${BOR}`,padding:'20px 24px',marginBottom:16}
 const sB:any={height:36,padding:'0 18px',borderRadius:6,border:`1px solid #3a3010`,cursor:'pointer',fontSize:12,fontWeight:600,background:BG2,color:G,letterSpacing:1}
 const sBP:any={...sB,background:`linear-gradient(135deg,${G3},${G})`,color:'#0a0800',border:'none'}
+const TH=(h:string,i?:number)=><th key={i} style={{textAlign:'left',padding:'8px 12px',fontSize:10,color:G,borderBottom:`1px solid ${BOR}`,textTransform:'uppercase',letterSpacing:1.2}}>{h}</th>
+const TD=({v,style}:{v:any,style?:any})=><td style={{padding:'9px 12px',color:G2,borderBottom:`1px solid #1a1600`,fontSize:13,...style}}>{v}</td>
 const Bdg=({tipo}:{tipo:string})=>{
 const c=tipo==='entrada'?['#0d2010','#4ade80']:tipo==='saida'?['#1a1200',G]:['#1a1200','#a0a0a0']
 return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{tipo==='devolucao'?'devolução':tipo}</span>
 }
 const LBdg=({local}:{local:string})=><span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[local]||local}</span>
-const TH=(h:string)=><th style={{textAlign:'left',padding:'8px 12px',fontSize:10,color:G,borderBottom:`1px solid ${BOR}`,textTransform:'uppercase',letterSpacing:1.2}}>{h}</th>
-const TD=({v,style}:{v:any,style?:any})=><td style={{padding:'9px 12px',color:G2,borderBottom:`1px solid #1a1600`,fontSize:13,...style}}>{v}</td>
 const TblEst=({loc}:{loc:string})=>{
 const items=Object.entries(estLoc(loc)).filter(([,v])=>v>0)
 if(!items.length)return <p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto em estoque</p>
-return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Produto','Quantidade'].map(h=><th key={h} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead><tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/></tr>)}</tbody></table>
+return <table style={{width:'100%',borderCollapse:'collapse'}}>
+<thead><tr>{['Produto','Quantidade'].map((h,i)=>TH(h,i))}</tr></thead>
+<tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/></tr>)}</tbody>
+</table>
 }
 const navItems=[
 {id:'dashboard',icon:'⊞',label:'Painel'},
@@ -63,32 +103,69 @@ const navItems=[
 ...(user?.perfil==='admin'||user?.perfil==='barfrisa'?[{id:'bar-barfrisa',icon:'◈',label:'Bar Frisa'}]:[]),
 ...(user?.perfil==='admin'||user?.perfil==='barboate'?[{id:'bar-barboate',icon:'◈',label:'Bar Boate'}]:[]),
 ...(user?.perfil==='admin'||user?.perfil==='barterceiro'?[{id:'bar-barterceiro',icon:'◈',label:'Bar 3° Andar'}]:[]),
-...(user?.perfil==='admin'||user?.perfil==='central'?[{id:'empresas',icon:'◉',label:'Empresas'}]:[]),
+...(user?.perfil==='admin'||user?.perfil==='central'?[{id:'empresas',icon:'◉',label:'Empresas'},{id:'produtos',icon:'▤',label:'Produtos'}]:[]),
 {id:'historico',icon:'≡',label:'Histórico'},
 ]
+
 const FE=({dest}:{dest:string})=>{
 const ro=!canEdit(dest==='central'?'central':dest)
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>↓ REGISTRAR ENTRADA</p>
 {ro&&<div style={{background:'#1a1200',border:`1px solid ${BOR}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:G,marginBottom:12}}>Acesso somente leitura</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-{dest==='central'&&<><div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>EMPRESA</label><select style={sI} value={form.empresa_id||''} onChange={e=>f('empresa_id',e.target.value)} disabled={ro}><option value="">Selecione</option>{emps.map(e=><option key={e.id} value={e.id}>{e.nome}</option>)}</select></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>Nº NOTA FISCAL</label><input style={sI} value={form.nf_numero||''} onChange={e=>f('nf_numero',e.target.value)} placeholder="Ex: 123456" disabled={ro}/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>VALOR UNITÁRIO (R$)</label><input type="number" style={sI} value={form.valor_unitario||''} onChange={e=>{f('valor_unitario',e.target.value);f('valor_total',((parseFloat(e.target.value)||0)*(parseInt(form.quantidade)||0)).toFixed(2))}} disabled={ro}/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>VALOR TOTAL (R$)</label><input type="number" style={sI} value={form.valor_total||''} disabled/></div></>}
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>CÓDIGO</label><input style={sI} value={form.cod_produto||''} onChange={e=>f('cod_produto',e.target.value)} disabled={ro}/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PRODUTO</label><select style={sI} value={form.produto||''} onChange={e=>f('produto',e.target.value)} disabled={ro}><option value="">Selecione</option>{PRODS.map(p=><option key={p}>{p}</option>)}</select></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>QUANTIDADE</label><input type="number" style={sI} value={form.quantidade||''} onChange={e=>{f('quantidade',parseInt(e.target.value));f('valor_total',((form.valor_unitario||0)*(parseInt(e.target.value)||0)).toFixed(2))}} disabled={ro}/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE</label><select style={sI} value={form.unidade||'unidade(s)'} onChange={e=>f('unidade',e.target.value)} disabled={ro}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
-{dest!=='central'&&<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DE QUAL DEPÓSITO</label><select style={sI} value={form.origem||'frisa'} onChange={e=>f('origem',e.target.value)} disabled={ro}><option value="frisa">1° Andar Frisa</option><option value="terceiro">3° Andar</option></select></div>}
-<div style={{gridColumn:'1/-1'}}><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>OBSERVAÇÃO</label><input style={sI} value={form.observacao||''} onChange={e=>f('observacao',e.target.value)} disabled={ro}/></div>
+{dest==='central'&&<>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>EMPRESA</label>
+<select style={sI} value={form.empresa_id||''} onChange={e=>f('empresa_id',e.target.value)} disabled={ro}>
+<option value="">Selecione</option>{emps.map(e=><option key={e.id} value={e.id}>{e.nome}</option>)}
+</select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>Nº NOTA FISCAL</label>
+<input style={sI} value={form.nf_numero||''} onChange={e=>f('nf_numero',e.target.value)} placeholder="Ex: 123456" disabled={ro} maxLength={20}/>
+</div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>VALOR UNITÁRIO (R$)</label>
+<input type="number" step="0.01" min="0" style={sI} value={form.valor_unitario||''} onChange={e=>{f('valor_unitario',e.target.value);calcTotal(form.quantidade,e.target.value)}} disabled={ro} placeholder="0,00"/>
+</div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>VALOR TOTAL (R$)</label>
+<input type="number" step="0.01" style={{...sI,opacity:0.7}} value={form.valor_total||''} readOnly placeholder="Calculado automaticamente"/>
+</div>
+<div style={{gridColumn:'1/-1'}}>
+<label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>ANEXO DA NOTA FISCAL (imagem ou PDF)</label>
+<div style={{display:'flex',gap:10,alignItems:'center'}}>
+<button type="button" style={{...sB,whiteSpace:'nowrap'}} onClick={()=>fileRef.current?.click()}>📎 Anexar arquivo</button>
+{nfFile&&<span style={{fontSize:12,color:G2}}>✓ {nfFile}</span>}
+{!nfFile&&<span style={{fontSize:11,color:'#5a4a20'}}>Nenhum arquivo selecionado</span>}
+</div>
+<input ref={fileRef} type="file" accept="image/*,.pdf" style={{display:'none'}} onChange={handleFile}/>
+</div>
+</>}
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>CÓDIGO</label>
+<input style={sI} value={form.cod_produto||''} onChange={e=>f('cod_produto',e.target.value)} disabled={ro}/>
+</div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PRODUTO</label>
+<select style={sI} value={form.produto||''} onChange={e=>f('produto',e.target.value)} disabled={ro}>
+<option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}
+</select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>QUANTIDADE</label>
+<input type="number" min="1" style={sI} value={form.quantidade||''} onChange={e=>{f('quantidade',e.target.value);calcTotal(e.target.value,form.valor_unitario)}} disabled={ro}/>
+</div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE</label>
+<select style={sI} value={form.unidade||'unidade(s)'} onChange={e=>f('unidade',e.target.value)} disabled={ro}>
+{UNIDS.map(u=><option key={u}>{u}</option>)}
+</select></div>
+{dest!=='central'&&<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DE QUAL DEPÓSITO</label>
+<select style={sI} value={form.origem||'frisa'} onChange={e=>f('origem',e.target.value)} disabled={ro}>
+<option value="frisa">1° Andar Frisa</option><option value="terceiro">3° Andar</option>
+</select></div>}
+<div style={{gridColumn:'1/-1'}}><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>OBSERVAÇÃO</label>
+<input style={sI} value={form.observacao||''} onChange={e=>f('observacao',e.target.value)} disabled={ro}/>
+</div>
 </div>
 {!ro&&<div style={{display:'flex',justifyContent:'flex-end',marginTop:16,gap:10}}>
-<button style={sB} onClick={()=>setForm({})}>Limpar</button>
+<button style={sB} onClick={()=>{setForm({});setNfFile(null)}}>Limpar</button>
 <button style={sBP} onClick={()=>reg('entrada',{...form,origem:dest==='central'?'empresa':(form.origem||'frisa'),destino:dest,data:new Date().toISOString()})}>✓ Registrar Entrada</button>
 </div>}
 </div>
 }
+
 const FS=({orig,dests}:{orig:string,dests:{value:string,label:string}[]})=>{
 const ro=!canEdit(orig)
 return <div style={sC}>
@@ -96,10 +173,19 @@ return <div style={sC}>
 {ro&&<div style={{background:'#1a1200',border:`1px solid ${BOR}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:G,marginBottom:12}}>Acesso somente leitura</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
 <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>CÓDIGO</label><input style={sI} value={form.cod_produto||''} onChange={e=>f('cod_produto',e.target.value)} disabled={ro}/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PRODUTO</label><select style={sI} value={form.produto||''} onChange={e=>f('produto',e.target.value)} disabled={ro}><option value="">Selecione</option>{PRODS.map(p=><option key={p}>{p}</option>)}</select></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>QUANTIDADE</label><input type="number" style={sI} value={form.quantidade||''} onChange={e=>f('quantidade',parseInt(e.target.value))} disabled={ro}/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE</label><select style={sI} value={form.unidade||'unidade(s)'} onChange={e=>f('unidade',e.target.value)} disabled={ro}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DESTINO</label><select style={sI} value={form.destino||''} onChange={e=>f('destino',e.target.value)} disabled={ro}><option value="">Selecione</option>{dests.map(d=><option key={d.value} value={d.value}>{d.label}</option>)}</select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PRODUTO</label>
+<select style={sI} value={form.produto||''} onChange={e=>f('produto',e.target.value)} disabled={ro}>
+<option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}
+</select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>QUANTIDADE</label><input type="number" min="1" style={sI} value={form.quantidade||''} onChange={e=>f('quantidade',parseInt(e.target.value))} disabled={ro}/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE</label>
+<select style={sI} value={form.unidade||'unidade(s)'} onChange={e=>f('unidade',e.target.value)} disabled={ro}>
+{UNIDS.map(u=><option key={u}>{u}</option>)}
+</select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DESTINO</label>
+<select style={sI} value={form.destino||''} onChange={e=>f('destino',e.target.value)} disabled={ro}>
+<option value="">Selecione</option>{dests.map(d=><option key={d.value} value={d.value}>{d.label}</option>)}
+</select></div>
 <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>RESPONSÁVEL</label><input style={sI} value={form.responsavel||''} onChange={e=>f('responsavel',e.target.value)} disabled={ro}/></div>
 <div style={{gridColumn:'1/-1'}}><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>OBSERVAÇÃO</label><input style={sI} value={form.observacao||''} onChange={e=>f('observacao',e.target.value)} disabled={ro}/></div>
 </div>
@@ -109,15 +195,25 @@ return <div style={sC}>
 </div>}
 </div>
 }
+
 const FD=({orig}:{orig:string})=>{
 const ro=!canEdit(orig)
 return <div style={{...sC,border:`1px solid #2a2a20`}}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>↺ DEVOLUÇÃO / CONTAGEM FINAL</p>
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PRODUTO</label><select style={sI} value={form.dev_produto||''} onChange={e=>f('dev_produto',e.target.value)} disabled={ro}><option value="">Selecione</option>{PRODS.map(p=><option key={p}>{p}</option>)}</select></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>QUANTIDADE</label><input type="number" style={sI} value={form.dev_quantidade||''} onChange={e=>f('dev_quantidade',parseInt(e.target.value))} disabled={ro}/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE</label><select style={sI} value={form.dev_unidade||'unidade(s)'} onChange={e=>f('dev_unidade',e.target.value)} disabled={ro}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DEVOLVER PARA</label><select style={sI} value={form.dev_destino||''} onChange={e=>f('dev_destino',e.target.value)} disabled={ro}><option value="">Selecione</option><option value="frisa">1° Andar Frisa</option><option value="terceiro">3° Andar</option><option value="central">Estoque Central</option></select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PRODUTO</label>
+<select style={sI} value={form.dev_produto||''} onChange={e=>f('dev_produto',e.target.value)} disabled={ro}>
+<option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}
+</select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>QUANTIDADE</label><input type="number" min="1" style={sI} value={form.dev_quantidade||''} onChange={e=>f('dev_quantidade',parseInt(e.target.value))} disabled={ro}/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE</label>
+<select style={sI} value={form.dev_unidade||'unidade(s)'} onChange={e=>f('dev_unidade',e.target.value)} disabled={ro}>
+{UNIDS.map(u=><option key={u}>{u}</option>)}
+</select></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DEVOLVER PARA</label>
+<select style={sI} value={form.dev_destino||''} onChange={e=>f('dev_destino',e.target.value)} disabled={ro}>
+<option value="">Selecione</option><option value="frisa">1° Andar Frisa</option><option value="terceiro">3° Andar</option><option value="central">Estoque Central</option>
+</select></div>
 <div style={{gridColumn:'1/-1'}}><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>OBSERVAÇÃO</label><input style={sI} value={form.dev_obs||''} onChange={e=>f('dev_obs',e.target.value)} disabled={ro}/></div>
 </div>
 {!ro&&<div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}>
@@ -125,6 +221,7 @@ return <div style={{...sC,border:`1px solid #2a2a20`}}>
 </div>}
 </div>
 }
+
 const renderAba=()=>{
 if(aba==='dashboard')return <>
 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:16}}>
@@ -140,7 +237,7 @@ if(aba==='dashboard')return <>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>ÚLTIMAS MOVIMENTAÇÕES</p>
 {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
 <div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino'].map(h=><th key={h} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead>
+<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino'].map((h,i)=>TH(h,i))}</tr></thead>
 <tbody>{movs.slice(0,8).map(m=><tr key={m.id}>
 <TD v={<Bdg tipo={m.tipo}/>}/>
 <TD v={fdt(m.data)} style={{whiteSpace:'nowrap',fontSize:11}}/>
@@ -150,11 +247,39 @@ if(aba==='dashboard')return <>
 </table></div>}
 </div>
 </>
+
 if(aba==='entrada-central')return <><FE dest="central"/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — ESTOQUE CENTRAL</p><TblEst loc="central"/></div></>
 if(aba==='saida-central')return <FS orig="central" dests={[{value:'frisa',label:'1° Andar Frisa'},{value:'terceiro',label:'3° Andar'}]}/>
 if(aba==='est-frisa')return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — 1° ANDAR FRISA</p><TblEst loc="frisa"/></div><FS orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]}/></>
 if(aba==='est-terceiro')return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — 3° ANDAR</p><TblEst loc="terceiro"/></div><FS orig="terceiro" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]}/></>
-if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — {LOC[k]?.toUpperCase()}</p><TblEst loc={k}/></div><FE dest={k}/><FD orig={k}/></>}
+if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><TblEst loc={k}/></div><FE dest={k}/><FD orig={k}/></>}
+
+if(aba==='produtos')return <>
+{canEdit('central')&&<div style={sC}>
+<p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>▤ CADASTRAR NOVO PRODUTO</p>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>NOME DO PRODUTO *</label><input style={sI} value={form.prod_nome||''} onChange={e=>f('prod_nome',e.target.value)} placeholder="Ex: Gin 1L"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>CATEGORIA</label><input style={sI} value={form.prod_cat||''} onChange={e=>f('prod_cat',e.target.value)} placeholder="Ex: Destilado"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE PADRÃO</label>
+<select style={sI} value={form.prod_unid||'unidade(s)'} onChange={e=>f('prod_unid',e.target.value)}>
+{UNIDS.map(u=><option key={u}>{u}</option>)}
+</select></div>
+</div>
+<div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}><button style={sBP} onClick={cadProd}>✓ Cadastrar Produto</button></div>
+</div>}
+<div style={sC}>
+<p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>
+{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:
+<table style={{width:'100%',borderCollapse:'collapse'}}>
+<thead><tr>{['Nome','Categoria','Unidade Padrão',''].map((h,i)=>TH(h,i))}</tr></thead>
+<tbody>{prods.map(p=><tr key={p.id}>
+<TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/>
+<TD v={canEdit('central')&&<button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/>
+</tr>)}</tbody>
+</table>}
+</div>
+</>
+
 if(aba==='empresas')return <>
 {canEdit('central')&&<div style={sC}>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>CADASTRAR EMPRESA</p>
@@ -169,7 +294,7 @@ if(aba==='empresas')return <>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>
 {emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:
 <table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map((h,i)=><th key={i} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead>
+<thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map((h,i)=>TH(h,i))}</tr></thead>
 <tbody>{emps.map(e=><tr key={e.id}>
 {[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}
 <TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/>
@@ -177,25 +302,29 @@ if(aba==='empresas')return <>
 </table>}
 </div>
 </>
+
 if(aba==='historico')return <div style={sC}>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>
 {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:
 <div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs'].map(h=><th key={h} style={{textAlign:"left",padding:"8px 12px",fontSize:10,color:"#C9A84C",borderBottom:"1px solid #2e2810",textTransform:"uppercase",letterSpacing:1.2}}>{h}</th>)}</tr></thead>
+<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Valor Total','Obs'].map((h,i)=>TH(h,i))}</tr></thead>
 <tbody>{movs.map(m=><tr key={m.id}>
 <TD v={<Bdg tipo={m.tipo}/>}/><TD v={fdt(m.data)} style={{whiteSpace:'nowrap',fontSize:11}}/>
 <TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/>
 <TD v={<LBdg local={m.origem}/>}/><TD v={<LBdg local={m.destino}/>}/>
-<TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} style={{color:'#6a5a30',fontSize:11}}/>
+<TD v={m.nf_numero||'—'}/>
+<TD v={m.valor_total?fmtR(parseFloat(m.valor_total)):'—'}/>
+<TD v={m.observacao||'—'} style={{color:'#6a5a30',fontSize:11}}/>
 </tr>)}</tbody>
 </table></div>}
 </div>
 }
+
 if(!user)return(
 <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#1a1200 0%,${BG} 70%)`}}>
-<div style={{width:400,padding:'44px 40px',background:`linear-gradient(160deg,${BG3},${BG2})`,border:`1px solid ${BOR}`,borderRadius:16,boxShadow:`0 0 80px #C9A84C10`}}>
+<div style={{width:420,padding:'44px 40px',background:`linear-gradient(160deg,${BG3},${BG2})`,border:`1px solid ${BOR}`,borderRadius:16,boxShadow:`0 0 80px #C9A84C10`}}>
 <div style={{textAlign:'center',marginBottom:36}}>
-<img src="/logo.png" alt="Camarote Atmosfera" style={{width:240,marginBottom:12}}/>
+<img src="/logo.png" alt="Camarote Atmosfera" style={{width:220,marginBottom:12,display:'block',margin:'0 auto 12px'}}/>
 <div style={{width:80,height:1,background:`linear-gradient(90deg,transparent,${G},transparent)`,margin:'0 auto 14px'}}/>
 <p style={{color:'#6a5a30',fontSize:11,letterSpacing:3,textTransform:'uppercase'}}>Controle de Estoque</p>
 </div>
@@ -219,11 +348,12 @@ if(!user)return(
 </div>
 </div>
 )
+
 return(
 <div style={{display:'flex',minHeight:'100vh',background:BG,fontFamily:'system-ui,sans-serif'}}>
 <div style={{width:220,background:BG2,borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',flexShrink:0}}>
-<div style={{padding:'24px 16px 20px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
-<img src="/logo.png" alt="Atmosfera" style={{width:220,marginBottom:4,display:"block",margin:"0 auto 4px",paddingLeft:"12%"}}/>
+<div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
+<img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
 {navItems.map(n=>(
