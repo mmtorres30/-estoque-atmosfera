@@ -205,25 +205,113 @@ const navItems=[
 {id:'historico',icon:'≡',label:'Histórico'},
 ]
 const renderAba=()=>{
-if(aba==='dashboard')return <>
-<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:16}}>
-{Object.entries(LOC).filter(([k])=>k!=='empresa').map(([k,nome])=>(
-<div key={k} style={{background:BG3,border:`1px solid ${BOR}`,borderRadius:10,padding:'18px 16px'}}>
-<div style={{fontSize:10,color:'#6a5a30',textTransform:'uppercase',letterSpacing:1,marginBottom:8}}>{nome}</div>
-<div style={{fontSize:32,fontWeight:700,color:G2,letterSpacing:-1}}>{totLoc(k)}</div>
-<div style={{fontSize:10,color:'#4a3a18',marginTop:2}}>unidades em estoque</div>
-</div>
-))}
-</div>
-<div style={sC}>
-<p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>ÚLTIMAS MOVIMENTAÇÕES</p>
-{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
-<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino'].map(TH)}</tr></thead>
-<tbody>{movs.slice(0,8).map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/></tr>)}</tbody>
-</table></div>}
-</div>
-</>
+if(aba==='dashboard'){
+  const totalGeral=Object.keys(LOC).filter(k=>k!=='empresa').reduce((a,k)=>a+totLoc(k),0)
+  const entHoje=movs.filter(m=>m.tipo==='entrada'&&new Date(m.data).toDateString()===new Date().toDateString()).length
+  const saiHoje=movs.filter(m=>m.tipo==='saida'&&new Date(m.data).toDateString()===new Date().toDateString()).length
+  const allItems=ests.filter(e=>e.quantidade>0)
+  const produtosUnicos=[...new Set(allItems.map(e=>e.produto))]
+  const locais=[
+    {key:'central',nome:'Estoque Central',desc:'Recebe fornecedores'},
+    {key:'frisa',nome:'1° Andar Frisa',desc:'Distribui para bares'},
+    {key:'terceiro',nome:'3° Andar',desc:'Distribui para bares'},
+    {key:'barfrisa',nome:'Bar Frisa',desc:'Atendimento direto'},
+    {key:'barboate',nome:'Bar Boate',desc:'Atendimento direto'},
+    {key:'barterceiro',nome:'Bar 3° Andar',desc:'Atendimento direto'},
+  ]
+  return <>
+    <div style={{marginBottom:20}}>
+      <p style={{fontSize:13,color:'#4a3a18'}}}>{new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}</p>
+    </div>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:20}}>
+      <div style={{background:'linear-gradient(135deg,#1c1608,#2a1e08)',border:'1px solid #3a3010',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#8a7040',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Total em estoque</div>
+        <div style={{fontSize:38,fontWeight:700,color:G2,letterSpacing:-1}}>{totalGeral.toLocaleString('pt-BR')}</div>
+        <div style={{fontSize:11,color:'#6a5a30',marginTop:4}}>unidades — todos os locais</div>
+      </div>
+      <div style={{background:'linear-gradient(135deg,#0d1a0d,#0a150a)',border:'1px solid #1a3010',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#4a7040',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Entradas hoje</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#4ade80',letterSpacing:-1}}>{entHoje}</div>
+        <div style={{fontSize:11,color:'#3a5030',marginTop:4}}>registros de entrada</div>
+      </div>
+      <div style={{background:'linear-gradient(135deg,#1a1200,#150e00)',border:'1px solid #3a2800',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#8a6020',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Saídas hoje</div>
+        <div style={{fontSize:38,fontWeight:700,color:G,letterSpacing:-1}}>{saiHoje}</div>
+        <div style={{fontSize:11,color:'#6a4a20',marginTop:4}}>registros de saída</div>
+      </div>
+      <div style={{background:'linear-gradient(135deg,#0d0d1a,#080810)',border:'1px solid #20203a',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#5050a0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Produtos ativos</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#a0a0ff',letterSpacing:-1}}>{produtosUnicos.length}</div>
+        <div style={{fontSize:11,color:'#404080',marginTop:4}}>tipos de produto</div>
+      </div>
+    </div>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12,marginBottom:20}}>
+      {locais.map(l=>{
+        const tot=totLoc(l.key)
+        const items=Object.entries(estLoc(l.key)).filter(([,v])=>v>0)
+        return <div key={l.key} style={{background:BG3,border:`1px solid ${tot>0?BOR:'#1a1608'}`,borderRadius:12,padding:'16px 18px'}}>
+          <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:10}}>
+            <div>
+              <div style={{fontSize:12,fontWeight:700,color:G2}}>{l.nome}</div>
+              <div style={{fontSize:10,color:'#5a4a20',marginTop:2}}>{l.desc}</div>
+            </div>
+            <div style={{textAlign:'right'}}>
+              <div style={{fontSize:24,fontWeight:800,color:tot>0?G:'#3a3020'}}>{tot}</div>
+              <div style={{fontSize:9,color:'#4a3a18'}}>unidades</div>
+            </div>
+          </div>
+          <div style={{borderTop:'1px solid #1e1a08',paddingTop:8}}>
+            {items.length>0?items.slice(0,4).map(([p,q])=>(
+              <div key={p} style={{display:'flex',justifyContent:'space-between',padding:'3px 0'}}>
+                <span style={{fontSize:11,color:'#8a7040',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'72%'}}>{p}</span>
+                <span style={{fontSize:11,fontWeight:600,color:G2,flexShrink:0}}>{q} un.</span>
+              </div>
+            )):<div style={{fontSize:11,color:'#3a3020',fontStyle:'italic'}}>Sem produtos em estoque</div>}
+            {items.length>4&&<div style={{fontSize:10,color:'#5a4a20',marginTop:4}}>+{items.length-4} produtos</div>}
+          </div>
+        </div>
+      })}
+    </div>
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+      <div style={sC}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+          <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>ÚLTIMAS MOVIMENTAÇÕES</p>
+          <span style={{fontSize:10,color:'#5a4a20',background:'#1a1200',border:'1px solid #2e2810',borderRadius:20,padding:'3px 10px'}}>{movs.length} total</span>
+        </div>
+        {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
+        <div>{movs.slice(0,6).map(m=>(
+          <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #1a1600'}}>
+            <div style={{width:8,height:8,borderRadius:'50%',background:m.tipo==='entrada'?'#4ade80':m.tipo==='saida'?G:'#a0a0a0',flexShrink:0}}/>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:12,color:G2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.produto}</div>
+              <div style={{fontSize:10,color:'#5a4a20',marginTop:1}}>{LOC[m.origem]||m.origem} → {LOC[m.destino]||m.destino}</div>
+            </div>
+            <div style={{textAlign:'right',flexShrink:0}}>
+              <div style={{fontSize:12,fontWeight:700,color:m.tipo==='entrada'?'#4ade80':G}}>{m.tipo==='entrada'?'+':'-'}{m.quantidade} {m.unidade}</div>
+              <div style={{fontSize:10,color:'#5a4a20'}}>{fdt(m.data)}</div>
+            </div>
+          </div>
+        ))}</div>}
+      </div>
+      <div style={sC}>
+        <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>INVENTÁRIO COMPLETO</p>
+        {allItems.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto em estoque</p>:
+        <div style={{maxHeight:320,overflowY:'auto'}}>
+          <table style={{width:'100%',borderCollapse:'collapse'}}>
+            <thead><tr>{['Produto','Local','Qtd'].map(TH)}</tr></thead>
+            <tbody>{allItems.sort((a,b)=>b.quantidade-a.quantidade).map((e,i)=>(
+              <tr key={i}>
+                <TD v={e.produto} s={{fontSize:12}}/>
+                <TD v={<span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'1px 8px',fontSize:10,whiteSpace:'nowrap'}}>{LOC[e.local]||e.local}</span>}/>
+                <TD v={<strong style={{color:G2}}>{e.quantidade}</strong>}/>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>}
+      </div>
+    </div>
+  </>
+}
 if(aba==='entrada-central')return <>{canEdit('central')&&<EntradaForm dest="central" emps={emps} prods={prods} onReg={reg}/>}<div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — ESTOQUE CENTRAL</p><TblEst loc="central"/></div></>
 if(aba==='saida-central')return <>{canEdit('central')&&<SaidaForm orig="central" dests={[{value:'frisa',label:'1° Andar Frisa'},{value:'terceiro',label:'3° Andar'}]} prods={prods} onReg={reg}/>}</>
 if(aba==='est-frisa')return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — 1° ANDAR FRISA</p><TblEst loc="frisa"/></div>{canEdit('frisa')&&<SaidaForm orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg}/>}</>
