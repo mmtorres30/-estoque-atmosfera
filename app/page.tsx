@@ -137,7 +137,7 @@ const submit=async()=>{
 if(!cod||!doc||!nome){setMsg('Preencha código, CNPJ e nome');return}
 const r=await fetch('/api/empresas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cod_produto:cod,documento:doc,nome,telefone:tel,email,produto:prod})})
 if(!r.ok){setMsg('Erro ao cadastrar');return}
-setCod('');setDoc('');setNome('');setTel('');setEmail('');setProd('');setMsg('Empresa cadastrada!');onAdd()
+setCod('');setDoc('');setNome('');setTel('');setEmail('');setProd('');setMsg('Empresa cadastrada!');setTimeout(()=>onAdd(),300)
 setTimeout(()=>setMsg(''),2000)
 }
 return <div style={sC}>
