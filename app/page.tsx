@@ -221,7 +221,7 @@ if(aba==='dashboard'){
   ]
   return <>
     <div style={{marginBottom:20}}>
-      <p style={{fontSize:13,color:'#4a3a18'}}}>{new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}</p>
+      <p style={{fontSize:13,color:'#4a3a18'}}>{new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}</p>
     </div>
     <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:20}}>
       <div style={{background:'linear-gradient(135deg,#1c1608,#2a1e08)',border:'1px solid #3a3010',borderRadius:12,padding:'20px 18px'}}>
