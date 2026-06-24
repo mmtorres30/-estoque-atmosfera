@@ -165,9 +165,16 @@ return <div style={sC}>
 {msg&&<div style={{background:msg.includes('Erro')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
 <div>{LBL('CÓDIGO')}<input style={sI} value={cod} onChange={e=>setCod(e.target.value)} placeholder="Ex: AGU-500"/></div>
-<div>{LBL('CNPJ/CPF')}<input style={sI} value={doc} onChange={e=>setDoc(e.target.value)} placeholder="00.000.000/0000-00"/></div>
+<div>{LBL('CNPJ/CPF')}<input style={sI} value={doc} onChange={e=>{
+let v=e.target.value.replace(/\D/g,'');
+if(v.length<=11){v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2')}
+else{v=v.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d{1,2})$/,'$1-$2')}
+setDoc(v)}} placeholder="00.000.000/0000-00" maxLength={18}/></div>
 <div>{LBL('NOME')}<input style={sI} value={nome} onChange={e=>setNome(e.target.value)} placeholder="Razão social"/></div>
-<div>{LBL('TELEFONE')}<input style={sI} value={tel} onChange={e=>setTel(e.target.value)} placeholder="(21) 99999-9999"/></div>
+<div>{LBL('TELEFONE')}<input style={sI} value={tel} onChange={e=>{
+let v=e.target.value.replace(/\D/g,'');
+v=v.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d{1,4})$/,'$1-$2');
+setTel(v)}} placeholder="(21) 99999-9999" maxLength={15}/></div>
 <div>{LBL('E-MAIL')}<input style={sI} value={email} onChange={e=>setEmail(e.target.value)} placeholder="email@empresa.com"/></div>
 <div>{LBL('PRODUTO')}<input style={sI} value={prod} onChange={e=>setProd(e.target.value)} placeholder="Ex: Água mineral"/></div>
 </div>
