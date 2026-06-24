@@ -237,6 +237,8 @@ const [rLocal,setRLocal]=useState('')
 const [rProd,setRProd]=useState('')
 const [rEmp,setREmp]=useState('')
 const [rUser,setRUser]=useState('')
+const [rTipo,setRTipo]=useState('')
+const [rAbaRel,setRAbaRel]=useState('movimentos')
 const showT=(m:string,e=false)=>{setToast(m);setToastE(e);setTimeout(()=>setToast(''),3000)}
 const load=async()=>{
 try{
@@ -476,6 +478,7 @@ if(rLocal&&m.origem!==rLocal&&m.destino!==rLocal)ok=false;
 if(rProd&&!m.produto.toLowerCase().includes(rProd.toLowerCase()))ok=false;
 if(rEmp&&m.empresa_id){const emp=emps.find(e=>e.id===m.empresa_id);if(!emp||!emp.nome.toLowerCase().includes(rEmp.toLowerCase()))ok=false;}
 if(rUser&&m.responsavel&&!m.responsavel.toLowerCase().includes(rUser.toLowerCase()))ok=false;
+if(rTipo&&m.tipo!==rTipo)ok=false;
 if(rDe&&new Date(m.data)<new Date(rDe))ok=false;
 if(rAte&&new Date(m.data)>new Date(rAte+'T23:59:59'))ok=false;
 return ok;
@@ -487,7 +490,41 @@ XLSX.writeFile(wb,'relatorio-atmosfera.xlsx');
 }} style={{...sB,height:34,padding:'0 14px',fontSize:11,background:'#1a4a1a',borderColor:'#4a8a4a',color:'#8aba8a'}}>📥 Excel</button>
 </div>
 </div>
-<div style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:16}}>
+<div style={{display:'flex',gap:8,marginBottom:16,borderBottom:`1px solid ${BOR}`}}>
+<button onClick={()=>setRAbaRel('movimentos')} style={{padding:'8px 16px',fontSize:11,letterSpacing:1,background:'transparent',border:'none',cursor:'pointer',color:rAbaRel==='movimentos'?G:'#5a4a20',borderBottom:rAbaRel==='movimentos'?`2px solid ${G}`:'2px solid transparent',fontWeight:rAbaRel==='movimentos'?700:400}}>MOVIMENTAÇÕES</button>
+<button onClick={()=>setRAbaRel('permanencia')} style={{padding:'8px 16px',fontSize:11,letterSpacing:1,background:'transparent',border:'none',cursor:'pointer',color:rAbaRel==='permanencia'?G:'#5a4a20',borderBottom:rAbaRel==='permanencia'?`2px solid ${G}`:'2px solid transparent',fontWeight:rAbaRel==='permanencia'?700:400}}>PERMANÊNCIA NO ESTOQUE</button>
+</div>
+{rAbaRel==='permanencia'&&(()=>{
+const entradas=movs.filter(m=>m.tipo==='entrada'||m.tipo==='transferencia');
+const saidas=movs.filter(m=>m.tipo==='saida'||m.tipo==='transferencia');
+const prods=[...new Set(movs.map(m=>m.produto))];
+const rows:any[]=[];
+prods.forEach(prod=>{
+const locs=[...new Set([...movs.filter(m=>m.produto===prod&&m.destino).map(m=>m.destino),...movs.filter(m=>m.produto===prod&&m.origem).map(m=>m.origem)])];
+locs.forEach(loc=>{
+const ents=movs.filter(m=>m.produto===prod&&(m.destino===loc)&&(m.tipo==='entrada'||m.tipo==='transferencia')).sort((a,b)=>new Date(a.data).getTime()-new Date(b.data).getTime());
+const sais=movs.filter(m=>m.produto===prod&&(m.origem===loc)&&(m.tipo==='saida'||m.tipo==='transferencia')).sort((a,b)=>new Date(a.data).getTime()-new Date(b.data).getTime());
+if(ents.length>0){
+const dtEnt=ents[0].data;
+const dtSai=sais.length>0?sais[sais.length-1].data:null;
+const dias=dtSai?Math.round((new Date(dtSai).getTime()-new Date(dtEnt).getTime())/(1000*60*60*24)):Math.round((new Date().getTime()-new Date(dtEnt).getTime())/(1000*60*60*24));
+rows.push({prod,loc,dtEnt,dtSai,dias,atual:!dtSai});
+}
+});
+});
+return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rows.length} registro(s)</p>
+<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
+<thead><tr>{['Produto','Local','Data Entrada','Data Saída','Dias no Estoque','Status'].map(h=><th key={h} style={{fontSize:10,color:G,letterSpacing:1,padding:'8px 10px',borderBottom:`1px solid ${BOR}`,textAlign:'left',whiteSpace:'nowrap'}}>{h}</th>)}</tr></thead>
+<tbody>{rows.length===0?<tr><td colSpan={6} style={{textAlign:'center',padding:24,color:'#5a4a20'}}>Sem dados</td></tr>:rows.map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${BOR}22`}}>
+<td style={{fontSize:11,padding:'7px 10px'}}>{r.prod}</td>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{LOC[r.loc]||r.loc}</td>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{fdt(r.dtEnt)}</td>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{r.dtSai?fdt(r.dtSai):'—'}</td>
+<td style={{fontSize:11,padding:'7px 10px',textAlign:'center'}}>{r.dias}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:r.atual?'#1a3a1a':'#2a2a2a',color:r.atual?'#4aaa4a':'#888',padding:'2px 8px',borderRadius:4,fontSize:10}}>{r.atual?'No estoque':'Saiu'}</span></td>
+</tr>)}</tbody>
+</table></div></>})()}
+{rAbaRel==='movimentos'&&<div style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:16}}>
 <input value={rDe} onChange={e=>setRDe(e.target.value)} type="date" style={{...sI,height:34,fontSize:11,width:140}} placeholder="Data início"/>
 <input value={rAte} onChange={e=>setRAte(e.target.value)} type="date" style={{...sI,height:34,fontSize:11,width:140}} placeholder="Data fim"/>
 <select value={rLocal} onChange={e=>setRLocal(e.target.value)} style={{...sI,height:34,fontSize:11}}>
@@ -497,14 +534,22 @@ XLSX.writeFile(wb,'relatorio-atmosfera.xlsx');
 <input value={rProd} onChange={e=>setRProd(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Produto..."/>
 <input value={rEmp} onChange={e=>setREmp(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Empresa..."/>
 <input value={rUser} onChange={e=>setRUser(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Usuário/Responsável..."/>
-<button onClick={()=>{setRDe('');setRAte('');setRLocal('');setRProd('');setREmp('');setRUser('')}} style={{...sB,height:34,padding:'0 12px',fontSize:11,background:'transparent',borderColor:'#555',color:'#888'}}>Limpar</button>
-</div>
+<select value={rTipo} onChange={e=>setRTipo(e.target.value)} style={{...sI,height:34,fontSize:11}}>
+<option value="">Todos os tipos</option>
+<option value="entrada">Entrada</option>
+<option value="saida">Saída</option>
+<option value="transferencia">Transferência</option>
+<option value="devolucao">Devolução</option>
+</select>
+<button onClick={()=>{setRDe('');setRAte('');setRLocal('');setRProd('');setREmp('');setRUser('');setRTipo('')}} style={{...sB,height:34,padding:'0 12px',fontSize:11,background:'transparent',borderColor:'#555',color:'#888'}}>Limpar</button>
+</div>}
 {(()=>{const rFil=movs.filter(m=>{
 let ok=true;
 if(rLocal&&m.origem!==rLocal&&m.destino!==rLocal)ok=false;
 if(rProd&&!m.produto.toLowerCase().includes(rProd.toLowerCase()))ok=false;
 if(rEmp&&m.empresa_id){const emp=emps.find(e=>e.id===m.empresa_id);if(!emp||!emp.nome.toLowerCase().includes(rEmp.toLowerCase()))ok=false;}
 if(rUser&&m.responsavel&&!m.responsavel.toLowerCase().includes(rUser.toLowerCase()))ok=false;
+if(rTipo&&m.tipo!==rTipo)ok=false;
 if(rDe&&new Date(m.data)<new Date(rDe))ok=false;
 if(rAte&&new Date(m.data)>new Date(rAte+'T23:59:59'))ok=false;
 return ok;
