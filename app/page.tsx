@@ -387,6 +387,9 @@ if(aba==='dashboard'){
     {key:'barboate',nome:'Bar Boate',desc:'Atendimento direto'},
     {key:'barterceiro',nome:'Bar 3° Andar',desc:'Atendimento direto'},
   ]
+  // Estados para expandir cards
+  const [showAllMovs,setShowAllMovs]=useState(false)
+  const [showAllInv,setShowAllInv]=useState(false)
   // Limites por local
   const LIMITES:Record<string,number>={central:30,frisa:20,terceiro:20,barfrisa:10,barboate:10,barterceiro:10}
   const alertas=ests.filter(e=>{
@@ -492,7 +495,7 @@ if(aba==='dashboard'){
           <span style={{fontSize:10,color:'#5a4a20',background:'#1a1200',border:'1px solid #2e2810',borderRadius:20,padding:'3px 10px'}}>{movs.length} total</span>
         </div>
         {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
-        <div>{movs.slice(0,6).map(m=>(
+        <div style={{overflowX:'auto'}}>{movs.slice(0,showAllMovs?1000:10).map(m=>(
           <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #1a1600'}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:m.tipo==='entrada'?'#4ade80':m.tipo==='saida'?G:'#a0a0a0',flexShrink:0}}/>
             <div style={{flex:1,minWidth:0}}>
@@ -507,12 +510,15 @@ if(aba==='dashboard'){
         ))}</div>}
       </div>
       <div style={sC}>
-        <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>INVENTÁRIO COMPLETO</p>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+          <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>INVENTÁRIO COMPLETO</p>
+          {allItems.length>10&&<button onClick={()=>setShowAllInv(!showAllInv)} style={{...sB,fontSize:10,padding:'3px 10px',height:'auto'}}>{showAllInv?'Ver menos':'Ver tudo ('+allItems.length+')'}</button>}
+        </div>
         {allItems.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto em estoque</p>:
         <div style={{maxHeight:320,overflowY:'auto'}}>
           <table style={{width:'100%',borderCollapse:'collapse'}}>
             <thead><tr>{['Produto','Local','Qtd'].map(TH)}</tr></thead>
-            <tbody>{allItems.sort((a,b)=>b.quantidade-a.quantidade).map((e,i)=>(
+            <tbody>{allItems.sort((a,b)=>b.quantidade-a.quantidade).slice(0,showAllInv?10000:10).map((e,i)=>(
               <tr key={i}>
                 <TD v={e.produto} s={{fontSize:12}}/>
                 <TD v={<span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'1px 8px',fontSize:10,whiteSpace:'nowrap'}}>{LOC[e.local]||e.local}</span>}/>
