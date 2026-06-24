@@ -232,8 +232,10 @@ const [toast,setToast]=useState(''),[toastE,setToastE]=useState(false)
 const [editMov,setEditMov]=useState<any>(null)
 const showT=(m:string,e=false)=>{setToast(m);setToastE(e);setTimeout(()=>setToast(''),3000)}
 const load=async()=>{
+try{
 const[m,e,em,pr,us]=await Promise.all([fetch('/api/movimentos').then(r=>r.json()),fetch('/api/estoques').then(r=>r.json()),fetch('/api/empresas').then(r=>r.json()),fetch('/api/produtos').then(r=>r.json()),fetch('/api/usuarios').then(r=>r.json())])
 setMovs(Array.isArray(m)?m:[]);setEsts(Array.isArray(e)?e:[]);setEmps(Array.isArray(em)?em:[]);setProds(Array.isArray(pr)?pr:[]);setUsuarios(Array.isArray(us)?us:[])
+}catch(err){console.error('Erro ao carregar dados:',err)}
 }
 useEffect(()=>{if(user)load()},[user])
 const login=async()=>{
