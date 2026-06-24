@@ -78,3 +78,8 @@ body {
     width: 100% !important;
   }
 }
+
+/* ===== TABELA RELATÓRIO ===== */
+#rel-table td, #rel-table th {
+  color: #e8e0d0 !important;
+}

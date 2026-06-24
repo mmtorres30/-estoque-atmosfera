@@ -553,11 +553,11 @@ return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rFil.length} m
 <div style={{overflowX:'auto'}}><table id="rel-table" style={{width:'100%',borderCollapse:'collapse'}}>
 <thead><tr>{['Data','Tipo','Produto','Qtd','Unid','Origem','Destino','NF','Responsável','Usuário','Obs'].map(h=><th key={h} style={{fontSize:10,color:G,letterSpacing:1,padding:'8px 10px',borderBottom:`1px solid ${BOR}`,textAlign:'left',whiteSpace:'nowrap'}}>{h}</th>)}</tr></thead>
 <tbody>{rFil.length===0?<tr><td colSpan={11} style={{textAlign:'center',padding:24,color:'#5a4a20',fontSize:13}}>Nenhuma movimentação encontrada</td></tr>:rFil.map(m=><tr key={m.id} style={{borderBottom:`1px solid ${BOR}22`}}>
-<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{fdt(m.data)}</td>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap',color:'#e8e0d0'}}>{fdt(m.data)}</td>
 <td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:m.tipo==='entrada'?'#1a3a1a':m.tipo==='saida'?'#3a1a1a':m.tipo==='transferencia'?'#1a1a3a':'#2a2a1a',color:m.tipo==='entrada'?'#4aaa4a':m.tipo==='saida'?'#aa4a4a':m.tipo==='transferencia'?'#4a4aaa':'#aaaa4a',padding:'2px 8px',borderRadius:4,fontSize:10,whiteSpace:'nowrap'}}>{m.tipo}</span></td>
-<td style={{fontSize:11,padding:'7px 10px'}}>{m.produto}</td>
-<td style={{fontSize:11,padding:'7px 10px'}}>{m.quantidade}</td>
-<td style={{fontSize:11,padding:'7px 10px'}}>{m.unidade}</td>
+<td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.produto}</td>
+<td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.quantidade}</td>
+<td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.unidade}</td>
 <td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{LOC[m.origem]||m.origem||'-'}</td>
 <td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{LOC[m.destino]||m.destino||'-'}</td>
 <td style={{fontSize:11,padding:'7px 10px'}}>{m.nf_numero||'-'}</td>
