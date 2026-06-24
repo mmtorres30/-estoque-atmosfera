@@ -68,15 +68,13 @@ body {
     display: block;
     position: fixed;
     inset: 0;
-    background: transparent;
-    z-index: 999;
-  }
-
-  .sidebar-desktop.menu-open .menu-overlay {
     background: rgba(0,0,0,0.6);
+    z-index: 999;
+    pointer-events: auto;
   }
 
-  .app-root > div:last-child {
-    padding-top: 60px !important;
+  .app-root > div:nth-child(2) {
+    padding-top: 60px;
+    width: 100% !important;
   }
 }
