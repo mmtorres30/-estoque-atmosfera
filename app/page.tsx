@@ -518,7 +518,7 @@ if(!user)return(
 )
 return(
 <div style={{display:'flex',minHeight:'100vh',background:BG,fontFamily:'system-ui,sans-serif'}} className='app-root'>
-<><button className='hamburger-btn' onClick={()=>setMenuOpen(true)}>☰</button><div className={'sidebar-desktop'+(menuOpen?' menu-open':'')} style={{width:220,minWidth:220,background:'#111',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div className='menu-overlay' onClick={()=>setMenuOpen(false)}/><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
+<div className={'sidebar-desktop'+(menuOpen?' menu-open':'')} style={{width:220,minWidth:220,background:'#111',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div className='menu-overlay' onClick={()=>setMenuOpen(false)}></div><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
 <img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
@@ -534,10 +534,10 @@ return(
 </div>
 </div>
 <div style={{flex:1,overflow:'auto'}}>
+<button className='hamburger-btn' onClick={()=>setMenuOpen(true)}>☰</button>
 <div style={{padding:'24px',maxWidth:1100,margin:'0 auto'}}>
 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}><p style={{fontSize:11,color:'#4a3a18',letterSpacing:2,textTransform:'uppercase',margin:0}}>{navItems.find(n=>n.id===aba)?.label||'Painel'}</p><button onClick={()=>{setAba('dashboard');load()}} style={{...sB,height:32,padding:'0 14px',fontSize:11,letterSpacing:1}}>🔄 Atualizar</button></div>
 {renderAba()}
-</div>
 </div>
 </div>
 </div>
