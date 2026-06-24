@@ -381,13 +381,13 @@ if(aba==='dashboard'){
             </div>
           </div>
           <div style={{borderTop:'1px solid #1e1a08',paddingTop:8}}>
-            {items.length>0?items.slice(0,4).map(([p,q])=>(
+            {items.length>0?items.slice(0,3).map(([p,q])=>(
               <div key={p} style={{display:'flex',justifyContent:'space-between',padding:'3px 0'}}>
                 <span style={{fontSize:11,color:'#8a7040',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'72%'}}>{p}</span>
                 <span style={{fontSize:11,fontWeight:600,color:G2,flexShrink:0}}>{q} un.</span>
               </div>
             )):<div style={{fontSize:11,color:'#3a3020',fontStyle:'italic'}}>Sem produtos em estoque</div>}
-            {items.length>4&&<div style={{fontSize:10,color:'#5a4a20',marginTop:4}}>+{items.length-4} produtos</div>}
+            {items.length>3&&<div style={{fontSize:10,color:'#5a4a20',marginTop:4}}>+{items.length-3} produtos</div>}
           </div>
         </div>
       })}
