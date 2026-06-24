@@ -259,6 +259,8 @@ const [editNome,setEditNome]=useState('')
 const [editCat,setEditCat]=useState('')
 const [editUnid,setEditUnid]=useState('unidade(s)')
 const [editMsg,setEditMsg]=useState('')
+const [showAllMovs,setShowAllMovs]=useState(false)
+const [showAllInv,setShowAllInv]=useState(false)
 const saveEdit=async()=>{
   const r=await fetch('/api/produtos',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editId,cod_produto:editCod,nome:editNome,categoria:editCat,unidade_padrao:editUnid})})
   if(!r.ok){setEditMsg('Erro ao salvar');return}
@@ -387,9 +389,6 @@ if(aba==='dashboard'){
     {key:'barboate',nome:'Bar Boate',desc:'Atendimento direto'},
     {key:'barterceiro',nome:'Bar 3° Andar',desc:'Atendimento direto'},
   ]
-  // Estados para expandir cards
-  const [showAllMovs,setShowAllMovs]=useState(false)
-  const [showAllInv,setShowAllInv]=useState(false)
   // Limites por local
   const LIMITES:Record<string,number>={central:30,frisa:20,terceiro:20,barfrisa:10,barboate:10,barterceiro:10}
   const alertas=ests.filter(e=>{
