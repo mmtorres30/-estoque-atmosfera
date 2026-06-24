@@ -312,8 +312,22 @@ const exportarExcel=(local:string)=>{
 
 const TblEst=({loc}:{loc:string})=>{
 const items=Object.entries(estLoc(loc)).filter(([,v])=>v>0)
+const podeEditar=user?.perfil==='admin'||user?.perfil==='operador'
+const editarEst=async(produto:string,qtdAtual:number)=>{
+const nova=prompt(`Nova quantidade para "${produto}":`,String(qtdAtual))
+if(nova===null)return
+const q=parseInt(nova)
+if(isNaN(q)||q<0){alert('Quantidade inválida');return}
+const r=await fetch('/api/estoques',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({local:loc,produto,quantidade:q})})
+if(r.ok){showT('Estoque atualizado!');load()}else showT('Erro ao atualizar',true)
+}
+const excluirEst=async(produto:string)=>{
+if(!confirm(`Excluir "${produto}" do estoque?`))return
+const r=await fetch('/api/estoques',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({local:loc,produto})})
+if(r.ok){showT('Produto removido!');load()}else showT('Erro ao remover',true)
+}
 if(!items.length)return <p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto em estoque</p>
-return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Produto','Quantidade'].map(TH)}</tr></thead><tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/></tr>)}</tbody></table>
+return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{(podeEditar?['Produto','Quantidade','Ações']:['Produto','Quantidade']).map(TH)}</tr></thead><tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/>{podeEditar&&<TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>editarEst(p,q)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>excluirEst(p)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button></div>}/>}</tr>)}</tbody></table>
 }
 const navItems=[
 {id:'dashboard',icon:'⊞',label:'Painel'},
