@@ -66,7 +66,7 @@ return <div style={sC}>
 <div style={{gridColumn:'1/-1'}}>{LBL('CÓDIGO')}
 <div style={{display:'flex',gap:8,alignItems:'center'}}>
 <input style={sI} value={cod} onChange={e=>{setCod(e.target.value);const p=prods.find((x:any)=>x.cod_produto===e.target.value||x.nome===e.target.value);if(p){setProd(p.nome||p.produto||'')}}} placeholder="Digite ou escaneie"/>
-<Scanner onScan={(code)=>{setCod(code);const p=prods.find((x:any)=>x.cod_produto===code||x.nome===code||x.produto===code);if(p){setProd(p.nome||p.produto||'')}}}/>
+<Scanner onScan={(code)=>{setCod(code);const p=prods.find((x:any)=>(x.cod_produto&&x.cod_produto===code)||x.nome===code);if(p){setProd(p.nome)}else{const pNome=prods.find((x:any)=>x.nome&&x.nome.toLowerCase().includes(code.toLowerCase()));if(pNome)setProd(pNome.nome)}}}/>
 </div></div>
 <div>{LBL('PRODUTO')}<select style={sI} value={prod} onChange={e=>setProd(e.target.value)}><option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}</select></div>
 <div>{LBL('QUANTIDADE')}<input style={sI} value={qty} onChange={e=>{setQty(e.target.value);calcTot(e.target.value,vUnit)}} placeholder="Ex: 24"/></div>
@@ -102,7 +102,7 @@ return <div style={sC}>
 <div style={{gridColumn:'1/-1'}}>{LBL('CÓDIGO')}
 <div style={{display:'flex',gap:8,alignItems:'center'}}>
 <input style={sI} value={cod} onChange={e=>{setCod(e.target.value);const p=prods.find((x:any)=>x.cod_produto===e.target.value||x.nome===e.target.value);if(p){setProd(p.nome||p.produto||'')}}} placeholder="Digite ou escaneie"/>
-<Scanner onScan={(code)=>{setCod(code);const p=prods.find((x:any)=>x.cod_produto===code||x.nome===code||x.produto===code);if(p){setProd(p.nome||p.produto||'')}}}/>
+<Scanner onScan={(code)=>{setCod(code);const p=prods.find((x:any)=>(x.cod_produto&&x.cod_produto===code)||x.nome===code);if(p){setProd(p.nome)}}}/>
 </div></div>
 <div>{LBL('PRODUTO')}<select style={sI} value={prod} onChange={e=>setProd(e.target.value)}><option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}</select></div>
 <div>{LBL('QUANTIDADE')}<input style={sI} value={qty} onChange={e=>setQty(e.target.value)} placeholder="Ex: 12"/></div>
