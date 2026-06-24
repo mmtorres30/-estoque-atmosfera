@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import * as XLSX from 'xlsx'
 const LOC:Record<string,string>={central:'Estoque Central',frisa:'1° Andar Frisa',terceiro:'3° Andar',barfrisa:'Bar Frisa',barboate:'Bar Boate',barterceiro:'Bar 3° Andar',empresa:'Fornecedora'}
 const UNIDS=['unidade(s)','caixa(s)','fardo(s)','barril(is)','garrafa(s)','lata(s)']
 const G='#C9A84C',G2='#F0D080',G3='#8B6914',BG='#0a0800',BG2='#110e02',BG3='#1a1608',BOR='#2e2810'
@@ -188,6 +189,19 @@ showT('Registrado com sucesso!');load();return true
 const delEmp=async(id:string)=>{await fetch('/api/empresas',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});showT('Removida');load()}
 const delProd=async(id:string)=>{await fetch('/api/produtos',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});showT('Removido');load()}
 const fdt=(dt:string)=>new Date(dt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+
+const exportarExcel=(local:string)=>{
+  const nomeLocal=LOC[local]||local
+  const saldo=Object.entries(estLoc(local)).filter(([,v])=>v>0).map(([p,q])=>({'Produto':p,'Quantidade em Estoque':q,'Local':nomeLocal}))
+  const historico=movs.filter(m=>m.origem===local||m.destino===local).map(m=>({'Data':fdt(m.data),'Tipo':m.tipo,'Produto':m.produto,'Quantidade':m.quantidade,'Unidade':m.unidade,'Origem':LOC[m.origem]||m.origem,'Destino':LOC[m.destino]||m.destino,'NF':m.nf_numero||'','Observação':m.observacao||''}))
+  const wb=XLSX.utils.book_new()
+  const ws1=XLSX.utils.json_to_sheet(saldo.length>0?saldo:[{'Produto':'Sem produtos','Quantidade em Estoque':0,'Local':nomeLocal}])
+  const ws2=XLSX.utils.json_to_sheet(historico.length>0?historico:[{'Data':'','Tipo':'Sem movimentações','Produto':'','Quantidade':0,'Unidade':'','Origem':'','Destino':'','NF':'','Observação':''}])
+  XLSX.utils.book_append_sheet(wb,ws1,'Saldo Atual')
+  XLSX.utils.book_append_sheet(wb,ws2,'Histórico')
+  XLSX.writeFile(wb,`Estoque_${nomeLocal.replace(/ /g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.xlsx`)
+}
+
 const TblEst=({loc}:{loc:string})=>{
 const items=Object.entries(estLoc(loc)).filter(([,v])=>v>0)
 if(!items.length)return <p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto em estoque</p>
@@ -312,11 +326,11 @@ if(aba==='dashboard'){
     </div>
   </>
 }
-if(aba==='entrada-central')return <>{canEdit('central')&&<EntradaForm dest="central" emps={emps} prods={prods} onReg={reg}/>}<div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — ESTOQUE CENTRAL</p><TblEst loc="central"/></div></>
+if(aba==='entrada-central')return <>{canEdit('central')&&<EntradaForm dest="central" emps={emps} prods={prods} onReg={reg}/>}<div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — ESTOQUE CENTRAL</p><button style={sBP} onClick={()=>exportarExcel('central')}>📊 Exportar Excel</button></div><TblEst loc="central"/></div></>
 if(aba==='saida-central')return <>{canEdit('central')&&<SaidaForm orig="central" dests={[{value:'frisa',label:'1° Andar Frisa'},{value:'terceiro',label:'3° Andar'}]} prods={prods} onReg={reg}/>}</>
-if(aba==='est-frisa')return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — 1° ANDAR FRISA</p><TblEst loc="frisa"/></div>{canEdit('frisa')&&<SaidaForm orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg}/>}</>
-if(aba==='est-terceiro')return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — 3° ANDAR</p><TblEst loc="terceiro"/></div>{canEdit('terceiro')&&<SaidaForm orig="terceiro" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg}/>}</>
-if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
+if(aba==='est-frisa')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 1° ANDAR FRISA</p><button style={sBP} onClick={()=>exportarExcel('frisa')}>📊 Exportar Excel</button></div><TblEst loc="frisa"/></div>{canEdit('frisa')&&<SaidaForm orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg}/>}</>
+if(aba==='est-terceiro')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 3° ANDAR</p><button style={sBP} onClick={()=>exportarExcel('terceiro')}>📊 Exportar Excel</button></div><TblEst loc="terceiro"/></div>{canEdit('terceiro')&&<SaidaForm orig="terceiro" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg}/>}</>
+if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><button style={sBP} onClick={()=>exportarExcel(k)}>📊 Exportar Excel</button></div><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
 if(aba==='produtos')return <><ProdutoForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Nome','Categoria','Unidade',''].map(TH)}</tr></thead><tbody>{prods.map(p=><tr key={p.id}><TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/><TD v={canEdit('central')&&<button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
 if(aba==='empresas')return <><EmpresaForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>{emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map(TH)}</tr></thead><tbody>{emps.map(e=><tr key={e.id}>{[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}<TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
 if(aba==='historico')return <div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs'].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/></tr>)}</tbody></table></div>}</div>
