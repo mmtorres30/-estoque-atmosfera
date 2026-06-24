@@ -399,7 +399,7 @@ if(aba==='historico')return <>
   </div>
 </div>}
 <div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs',''].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/><TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>setEditMov(m)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>delMov(m.id)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button></div>}/></tr>)}</tbody></table></div>}</div>
-}
+</>}
 if(!user)return(
 <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#1a1200 0%,${BG} 70%)`}}>
 <div style={{width:420,padding:'44px 40px',background:`linear-gradient(160deg,${BG3},${BG2})`,border:`1px solid ${BOR}`,borderRadius:16,boxShadow:'0 0 80px #C9A84C10'}}>
