@@ -157,20 +157,6 @@ const saveEdit=async()=>{
   onAdd()
   setTimeout(()=>setEditMsg(''),2000)
 }
-const [editId,setEditId]=useState<string|null>(null)
-const [editCod,setEditCod]=useState('')
-const [editNome,setEditNome]=useState('')
-const [editCat,setEditCat]=useState('')
-const [editUnid,setEditUnid]=useState('unidade(s)')
-const [editMsg,setEditMsg]=useState('')
-const saveEdit=async()=>{
-  const r=await fetch('/api/produtos',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editId,cod_produto:editCod,nome:editNome,categoria:editCat,unidade_padrao:editUnid})})
-  if(!r.ok){setEditMsg('Erro ao salvar');return}
-  setEditMsg('Salvo!')
-  setEditId(null)
-  onAdd()
-  setTimeout(()=>setEditMsg(''),2000)
-}
 const [nome,setNome]=useState(''),[cat,setCat]=useState(''),[unid,setUnid]=useState('unidade(s)'),[msg,setMsg]=useState('')
 const submit=async()=>{
 if(!nome){setMsg('Digite o nome');return}
