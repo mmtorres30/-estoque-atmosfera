@@ -21,6 +21,13 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(data)
 }
 
+export async function PUT(req: NextRequest) {
+  const { id, cod_produto, nome, categoria, unidade_padrao } = await req.json()
+  const { data, error } = await supabaseAdmin.from('produtos').update({ cod_produto, nome, categoria, unidade_padrao }).eq('id', id).select().single()
+  if (error) return NextResponse.json({ error }, { status: 500 })
+  return NextResponse.json(data)
+}
+
 export async function DELETE(req: NextRequest) {
   const { id } = await req.json()
   const { error } = await supabaseAdmin.from('produtos').delete().eq('id', id)

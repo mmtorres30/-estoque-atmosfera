@@ -143,6 +143,34 @@ return <div style={{...sC,border:'1px solid #2a2a20'}}>
 
 function ProdutoForm({onAdd}:{onAdd:()=>void}){
 const [codProd,setCodProd]=useState('')
+const [editId,setEditId]=useState<string|null>(null)
+const [editCod,setEditCod]=useState('')
+const [editNome,setEditNome]=useState('')
+const [editCat,setEditCat]=useState('')
+const [editUnid,setEditUnid]=useState('unidade(s)')
+const [editMsg,setEditMsg]=useState('')
+const saveEdit=async()=>{
+  const r=await fetch('/api/produtos',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editId,cod_produto:editCod,nome:editNome,categoria:editCat,unidade_padrao:editUnid})})
+  if(!r.ok){setEditMsg('Erro ao salvar');return}
+  setEditMsg('Salvo!')
+  setEditId(null)
+  onAdd()
+  setTimeout(()=>setEditMsg(''),2000)
+}
+const [editId,setEditId]=useState<string|null>(null)
+const [editCod,setEditCod]=useState('')
+const [editNome,setEditNome]=useState('')
+const [editCat,setEditCat]=useState('')
+const [editUnid,setEditUnid]=useState('unidade(s)')
+const [editMsg,setEditMsg]=useState('')
+const saveEdit=async()=>{
+  const r=await fetch('/api/produtos',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editId,cod_produto:editCod,nome:editNome,categoria:editCat,unidade_padrao:editUnid})})
+  if(!r.ok){setEditMsg('Erro ao salvar');return}
+  setEditMsg('Salvo!')
+  setEditId(null)
+  onAdd()
+  setTimeout(()=>setEditMsg(''),2000)
+}
 const [nome,setNome]=useState(''),[cat,setCat]=useState(''),[unid,setUnid]=useState('unidade(s)'),[msg,setMsg]=useState('')
 const submit=async()=>{
 if(!nome){setMsg('Digite o nome');return}
@@ -470,7 +498,7 @@ if(aba==='saida-central')return <>{canEdit('central')&&<SaidaForm orig="central"
 if(aba==='est-frisa')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 1° ANDAR FRISA</p><button style={sBP} onClick={()=>exportarExcel('frisa')}>📊 Exportar Excel</button></div><TblEst loc="frisa"/></div>{canEdit('frisa')&&<SaidaForm orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
 if(aba==='est-terceiro')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 3° ANDAR</p><button style={sBP} onClick={()=>exportarExcel('terceiro')}>📊 Exportar Excel</button></div><TblEst loc="terceiro"/></div>{canEdit('terceiro')&&<SaidaForm orig="terceiro" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
 if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><button style={sBP} onClick={()=>exportarExcel(k)}>📊 Exportar Excel</button></div><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
-if(aba==='produtos')return <><ProdutoForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Nome','Categoria','Unidade',''].map(TH)}</tr></thead><tbody>{prods.map(p=><tr key={p.id}><TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/><TD v={canEdit('central')&&<button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
+if(aba==='produtos')return <><ProdutoForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Codigo','Nome','Categoria','Unidade',''].map(TH)}</tr></thead><tbody>{prods.map(p=><tr key={p.id}><TD v={p.cod_produto||'-'}/><TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/><TD v={canEdit('central')&&<div style={{display:'flex',gap:6}}><button onClick={()=>{setEditId(p.id);setEditCod(p.cod_produto||'');setEditNome(p.nome);setEditCat(p.categoria||'');setEditUnid(p.unidade_padrao||'unidade(s)')}} style={{...sB,height:26,padding:'0 10px',fontSize:11,background:'#1a2a0a',borderColor:'#4a8a2a',color:'#8ac84c'}}>Editar</button><button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button></div>}/></tr>)}</tbody></table>{editId&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.85)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}><div style={{background:'#111',border:'1px solid #C9A84C',borderRadius:10,padding:24,width:'90%',maxWidth:480,display:'flex',flexDirection:'column',gap:14}}><p style={{color:'#C9A84C',fontWeight:700,fontSize:13,letterSpacing:1,margin:0}}>EDITAR PRODUTO</p>{editMsg&&<p style={{color:'#8ac84c',fontSize:12,margin:0}}>{editMsg}</p>}{LBL('CODIGO')}<div style={{display:'flex',gap:8,alignItems:'center'}}><input style={{...sI,flex:1}} value={editCod} onChange={e=>setEditCod(e.target.value)} placeholder='Ex: 7891234'/><Scanner onScan={(c)=>setEditCod(c)}/></div>{LBL('NOME')}<input style={sI} value={editNome} onChange={e=>setEditNome(e.target.value)}/>{LBL('CATEGORIA')}<input style={sI} value={editCat} onChange={e=>setEditCat(e.target.value)}/>{LBL('UNIDADE')}<select style={sI} value={editUnid} onChange={e=>setEditUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select><div style={{display:'flex',gap:10,justifyContent:'flex-end',marginTop:8}}><button style={sB} onClick={()=>setEditId(null)}>Cancelar</button><button style={sBP} onClick={saveEdit}>Salvar</button></div></div></div>}}</div></>
 if(aba==='empresas')return <><EmpresaForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>{emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map(TH)}</tr></thead><tbody>{emps.map(e=><tr key={e.id}>{[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}<TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
 if(aba==='usuarios')return <><UsuarioForm onAdd={load}/><div style={sC}>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>USUÁRIOS CADASTRADOS</p>
