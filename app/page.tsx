@@ -357,7 +357,48 @@ if(aba==='est-terceiro')return <><div style={sC}><div style={{display:'flex',jus
 if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><button style={sBP} onClick={()=>exportarExcel(k)}>📊 Exportar Excel</button></div><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
 if(aba==='produtos')return <><ProdutoForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Nome','Categoria','Unidade',''].map(TH)}</tr></thead><tbody>{prods.map(p=><tr key={p.id}><TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/><TD v={canEdit('central')&&<button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
 if(aba==='empresas')return <><EmpresaForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>{emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map(TH)}</tr></thead><tbody>{emps.map(e=><tr key={e.id}>{[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}<TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
-if(aba==='historico')return <div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs',''].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/><TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>setEditMov(m)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>delMov(m.id)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button></div>}/></tr>)}</tbody></table></div>}</div>
+if(aba==='historico')return <>
+{editMov&&<div style={{...sC,border:`1px solid ${G}`,marginBottom:16}}>
+  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+    <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>✏️ EDITAR MOVIMENTAÇÃO</p>
+    <button style={{...sB,height:28,padding:'0 12px',fontSize:11}} onClick={()=>setEditMov(null)}>✕ Fechar</button>
+  </div>
+  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>TIPO</label>
+    <select style={sI} value={editMov.tipo} onChange={e=>setEditMov({...editMov,tipo:e.target.value})}>
+      <option value="entrada">entrada</option><option value="saida">saida</option><option value="devolucao">devolucao</option>
+    </select></div>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DATA</label>
+    <input type="datetime-local" style={sI} value={editMov.data?.slice(0,16)||''} onChange={e=>setEditMov({...editMov,data:e.target.value})}/></div>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PRODUTO</label>
+    <select style={sI} value={editMov.produto||''} onChange={e=>setEditMov({...editMov,produto:e.target.value})}>
+      {prods.map(p=><option key={p.id}>{p.nome}</option>)}
+    </select></div>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>QUANTIDADE</label>
+    <input style={sI} value={editMov.quantidade||''} onChange={e=>setEditMov({...editMov,quantidade:parseInt(e.target.value)||0})}/></div>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>UNIDADE</label>
+    <select style={sI} value={editMov.unidade||'unidade(s)'} onChange={e=>setEditMov({...editMov,unidade:e.target.value})}>
+      {UNIDS.map(u=><option key={u}>{u}</option>)}
+    </select></div>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>ORIGEM</label>
+    <select style={sI} value={editMov.origem||''} onChange={e=>setEditMov({...editMov,origem:e.target.value})}>
+      {Object.entries(LOC).map(([k,v])=><option key={k} value={k}>{v as string}</option>)}
+      <option value="empresa">Empresa Fornecedora</option>
+    </select></div>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DESTINO</label>
+    <select style={sI} value={editMov.destino||''} onChange={e=>setEditMov({...editMov,destino:e.target.value})}>
+      {Object.entries(LOC).map(([k,v])=><option key={k} value={k}>{v as string}</option>)}
+    </select></div>
+    <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>Nº NOTA FISCAL</label>
+    <input style={sI} value={editMov.nf_numero||''} onChange={e=>setEditMov({...editMov,nf_numero:e.target.value})}/></div>
+    <div style={{gridColumn:'1/-1'}}><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>OBSERVAÇÃO</label>
+    <input style={sI} value={editMov.observacao||''} onChange={e=>setEditMov({...editMov,observacao:e.target.value})}/></div>
+  </div>
+  <div style={{display:'flex',justifyContent:'flex-end',gap:10,marginTop:16}}>
+    <button style={sBP} onClick={salvarEdicao}>✓ Salvar alterações</button>
+  </div>
+</div>}
+<div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs',''].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/><TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>setEditMov(m)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>delMov(m.id)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button></div>}/></tr>)}</tbody></table></div>}</div>
 }
 if(!user)return(
 <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#1a1200 0%,${BG} 70%)`}}>
