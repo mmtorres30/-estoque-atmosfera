@@ -17,7 +17,7 @@ const LB=({l}:{l:string})=><span style={{background:'#1a1200',color:G,border:`1p
 function EntradaForm({dest,emps,prods,onReg}:{dest:string,emps:any[],prods:any[],onReg:(t:string,d:any)=>Promise<boolean>}){
 const [empresa,setEmpresa]=useState('')
 const [nf,setNf]=useState('')
-const [vUnit,setVUnit]=useState('')
+const [vUnit,setVUnit]=useState('0,00')
 const [vTot,setVTot]=useState('')
 const [cod,setCod]=useState('')
 const [prod,setProd]=useState('')
@@ -27,10 +27,10 @@ const [orig,setOrig]=useState('frisa')
 const [obs,setObs]=useState('')
 const [nfFile,setNfFile]=useState('')
 const fileRef=useRef<HTMLInputElement>(null)
-const calcTot=(q:string,v:string)=>{const qn=parseFloat(q)||0,vn=parseFloat(v.replace(',','.'))||0;if(qn&&vn)setVTot((qn*vn).toFixed(2))}
+const calcTot=(q:string,v:string)=>{const qn=parseFloat(q)||0,vn=unMaskMoeda(v);if(qn&&vn)setVTot(maskMoeda(String(Math.round(qn*vn*100))))}
 const handleFile=(e:React.ChangeEvent<HTMLInputElement>)=>{const f=e.target.files?.[0];if(f)setNfFile(f.name)}
 const submit=async()=>{
-await onReg('entrada',{empresa_id:empresa,nf_numero:nf,nf_arquivo:nfFile,valor_unitario:vUnit,valor_total:vTot,cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:dest==='central'?'empresa':orig,destino:dest,observacao:obs,data:new Date().toISOString()})
+await onReg('entrada',{empresa_id:empresa,nf_numero:nf,nf_arquivo:nfFile,valor_unitario:unMaskMoeda(vUnit),valor_total:unMaskMoeda(vTot),cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:dest==='central'?'empresa':orig,destino:dest,observacao:obs,data:new Date().toISOString()})
 setEmpresa('');setNf('');setVUnit('');setVTot('');setCod('');setProd('');setQty('');setUnid('unidade(s)');setOrig('frisa');setObs('');setNfFile('')
 }
 return <div style={sC}>
@@ -39,7 +39,7 @@ return <div style={sC}>
 {dest==='central'&&<>
 <div>{LBL('EMPRESA')}<select style={sI} value={empresa} onChange={e=>setEmpresa(e.target.value)}><option value="">Selecione</option>{emps.map(e=><option key={e.id} value={e.id}>{e.nome}</option>)}</select></div>
 <div>{LBL('Nº NOTA FISCAL')}<input style={sI} value={nf} onChange={e=>setNf(e.target.value)} placeholder="Ex: 123456"/></div>
-<div>{LBL('VALOR UNITÁRIO (R$)')}<input style={sI} value={vUnit} onChange={e=>{setVUnit(e.target.value);calcTot(qty,e.target.value)}} placeholder="Ex: 2.50"/></div>
+<div>{LBL('VALOR UNITÁRIO (R$)')}<input style={sI} value={vUnit} onChange={e=>{const m=maskMoeda(e.target.value);setVUnit(m);calcTot(qty,m)}} placeholder="R$ 0,00"/></div>
 <div>{LBL('VALOR TOTAL (R$)')}<input style={{...sI,opacity:0.7}} value={vTot} readOnly placeholder="Calculado automaticamente"/></div>
 <div style={{gridColumn:'1/-1'}}>
 {LBL('ANEXO DA NOTA FISCAL')}
