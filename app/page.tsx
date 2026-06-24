@@ -184,6 +184,7 @@ const [nome,setNome]=useState('')
 const [perfil,setPerfil]=useState('central')
 const [msg,setMsg]=useState('')
 const PERFIS=[
+  {value:'operador',label:'Operador (acesso a todos estoques)'},
   {value:'central',label:'Estoque Central'},
   {value:'frisa',label:'1° Andar Frisa'},
   {value:'terceiro',label:'3° Andar'},
@@ -239,7 +240,15 @@ const login=async()=>{
 const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:lu,senha:lp})})
 const d=await r.json();if(!r.ok){showT(d.error,true);return};setUser(d.usuario)
 }
-const canEdit=(s:string)=>user?.perfil==='admin'||user?.perfil===s
+const canEdit=(s:string)=>{
+  const p=user?.perfil
+  if(p==='admin') return true
+  if(p==='operador') return true
+  return p===s
+}
+const canView=()=>true
+const isAdmin=()=>user?.perfil==='admin'
+const isOperador=()=>user?.perfil==='operador'
 const estLoc=(loc:string)=>{const o:Record<string,number>={};ests.filter(e=>e.local===loc).forEach(e=>{o[e.produto]=e.quantidade});return o}
 const totLoc=(loc:string)=>ests.filter(e=>e.local===loc).reduce((a,e)=>a+e.quantidade,0)
 const reg=async(tipo:string,dados:any)=>{
