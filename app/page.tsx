@@ -177,6 +177,86 @@ return <div style={sC}>
 </div>
 }
 
+function UsuarioForm({onAdd}:{onAdd:()=>void}){
+const [username,setUsername]=useState('')
+const [senha,setSenha]=useState('')
+const [nome,setNome]=useState('')
+const [perfil,setPerfil]=useState('central')
+const [msg,setMsg]=useState('')
+const PERFIS=[
+  {value:'central',label:'Estoque Central'},
+  {value:'frisa',label:'1° Andar Frisa'},
+  {value:'terceiro',label:'3° Andar'},
+  {value:'barfrisa',label:'Bar Frisa'},
+  {value:'barboate',label:'Bar Boate'},
+  {value:'barterceiro',label:'Bar 3° Andar'},
+]
+const submit=async()=>{
+  if(!username||!senha||!nome){setMsg('Preencha todos os campos');return}
+  const r=await fetch('/api/usuarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,senha,nome,nome_completo:nome,perfil})})
+  const d=await r.json()
+  if(!r.ok){setMsg(d.error||'Erro ao cadastrar');return}
+  setUsername('');setSenha('');setNome('');setPerfil('central');setMsg('Usuário cadastrado!')
+  onAdd();setTimeout(()=>setMsg(''),2000)
+}
+return <div style={sC}>
+<p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>👤 CADASTRAR NOVO USUÁRIO</p>
+{msg&&<div style={{background:msg.includes('Erro')||msg.includes('Preencha')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')||msg.includes('Preencha')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')||msg.includes('Preencha')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>NOME COMPLETO</label><input style={sI} value={nome} onChange={e=>setNome(e.target.value)} placeholder="Ex: João Silva"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>LOGIN (usuário)</label><input style={sI} value={username} onChange={e=>setUsername(e.target.value.toLowerCase().replace(/\s/g,''))} placeholder="Ex: joao.silva"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>SENHA</label><input type="password" style={sI} value={senha} onChange={e=>setSenha(e.target.value)} placeholder="Mínimo 6 caracteres"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PERFIL DE ACESSO</label>
+<select style={sI} value={perfil} onChange={e=>setPerfil(e.target.value)}>
+{PERFIS.map(p=><option key={p.value} value={p.value}>{p.label}</option>)}
+</select></div>
+</div>
+<div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}>
+<button style={sBP} onClick={submit}>✓ Cadastrar Usuário</button>
+</div>
+</div>
+}
+
+function UsuarioForm({onAdd}:{onAdd:()=>void}){
+const [username,setUsername]=useState('')
+const [senha,setSenha]=useState('')
+const [nome,setNome]=useState('')
+const [perfil,setPerfil]=useState('central')
+const [msg,setMsg]=useState('')
+const PERFIS=[
+  {value:'central',label:'Estoque Central'},
+  {value:'frisa',label:'1° Andar Frisa'},
+  {value:'terceiro',label:'3° Andar'},
+  {value:'barfrisa',label:'Bar Frisa'},
+  {value:'barboate',label:'Bar Boate'},
+  {value:'barterceiro',label:'Bar 3° Andar'},
+]
+const submit=async()=>{
+  if(!username||!senha||!nome){setMsg('Preencha todos os campos');return}
+  const r=await fetch('/api/usuarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,senha,nome,nome_completo:nome,perfil})})
+  const d=await r.json()
+  if(!r.ok){setMsg(d.error||'Erro ao cadastrar');return}
+  setUsername('');setSenha('');setNome('');setPerfil('central');setMsg('Usuário cadastrado!')
+  onAdd();setTimeout(()=>setMsg(''),2000)
+}
+return <div style={sC}>
+<p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>👤 CADASTRAR NOVO USUÁRIO</p>
+{msg&&<div style={{background:msg.includes('Erro')||msg.includes('Preencha')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')||msg.includes('Preencha')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')||msg.includes('Preencha')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>NOME COMPLETO</label><input style={sI} value={nome} onChange={e=>setNome(e.target.value)} placeholder="Ex: João Silva"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>LOGIN (usuário)</label><input style={sI} value={username} onChange={e=>setUsername(e.target.value.toLowerCase().replace(/\s/g,''))} placeholder="Ex: joao.silva"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>SENHA</label><input type="password" style={sI} value={senha} onChange={e=>setSenha(e.target.value)} placeholder="Mínimo 6 caracteres"/></div>
+<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PERFIL DE ACESSO</label>
+<select style={sI} value={perfil} onChange={e=>setPerfil(e.target.value)}>
+{PERFIS.map(p=><option key={p.value} value={p.value}>{p.label}</option>)}
+</select></div>
+</div>
+<div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}>
+<button style={sBP} onClick={submit}>✓ Cadastrar Usuário</button>
+</div>
+</div>
+}
+
 export default function App(){
 const [user,setUser]=useState<any>(null)
 const [lu,setLu]=useState(''),[lp,setLp]=useState('')
@@ -185,12 +265,13 @@ const [movs,setMovs]=useState<any[]>([])
 const [ests,setEsts]=useState<any[]>([])
 const [emps,setEmps]=useState<any[]>([])
 const [prods,setProds]=useState<any[]>([])
+const [usuarios,setUsuarios]=useState<any[]>([])
 const [toast,setToast]=useState(''),[toastE,setToastE]=useState(false)
 const [editMov,setEditMov]=useState<any>(null)
 const showT=(m:string,e=false)=>{setToast(m);setToastE(e);setTimeout(()=>setToast(''),3000)}
 const load=async()=>{
-const[m,e,em,pr]=await Promise.all([fetch('/api/movimentos').then(r=>r.json()),fetch('/api/estoques').then(r=>r.json()),fetch('/api/empresas').then(r=>r.json()),fetch('/api/produtos').then(r=>r.json())])
-setMovs(Array.isArray(m)?m:[]);setEsts(Array.isArray(e)?e:[]);setEmps(Array.isArray(em)?em:[]);setProds(Array.isArray(pr)?pr:[])
+const[m,e,em,pr,us]=await Promise.all([fetch('/api/movimentos').then(r=>r.json()),fetch('/api/estoques').then(r=>r.json()),fetch('/api/empresas').then(r=>r.json()),fetch('/api/produtos').then(r=>r.json()),fetch('/api/usuarios').then(r=>r.json())])
+setMovs(Array.isArray(m)?m:[]);setEsts(Array.isArray(e)?e:[]);setEmps(Array.isArray(em)?em:[]);setProds(Array.isArray(pr)?pr:[]);setUsuarios(Array.isArray(us)?us:[])
 }
 useEffect(()=>{if(user)load()},[user])
 const login=async()=>{
@@ -251,6 +332,7 @@ const navItems=[
 ...(user?.perfil==='admin'||user?.perfil==='barboate'?[{id:'bar-barboate',icon:'◈',label:'Bar Boate'}]:[]),
 ...(user?.perfil==='admin'||user?.perfil==='barterceiro'?[{id:'bar-barterceiro',icon:'◈',label:'Bar 3° Andar'}]:[]),
 ...(user?.perfil==='admin'||user?.perfil==='central'?[{id:'empresas',icon:'◉',label:'Empresas'},{id:'produtos',icon:'▤',label:'Produtos'}]:[]),
+...(user?.perfil==='admin'?[{id:'usuarios',icon:'👤',label:'Usuários'}]:[]),
 {id:'historico',icon:'≡',label:'Histórico'},
 ]
 const renderAba=()=>{
@@ -368,6 +450,25 @@ if(aba==='est-terceiro')return <><div style={sC}><div style={{display:'flex',jus
 if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><button style={sBP} onClick={()=>exportarExcel(k)}>📊 Exportar Excel</button></div><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
 if(aba==='produtos')return <><ProdutoForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Nome','Categoria','Unidade',''].map(TH)}</tr></thead><tbody>{prods.map(p=><tr key={p.id}><TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/><TD v={canEdit('central')&&<button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
 if(aba==='empresas')return <><EmpresaForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>{emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map(TH)}</tr></thead><tbody>{emps.map(e=><tr key={e.id}>{[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}<TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
+if(aba==='usuarios')return <><UsuarioForm onAdd={load}/><div style={sC}>
+<p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>USUÁRIOS CADASTRADOS</p>
+{usuarios.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum usuário</p>:
+<table style={{width:'100%',borderCollapse:'collapse'}}>
+<thead><tr>{['Login','Nome','Perfil','Status','Senha',''].map(TH)}</tr></thead>
+<tbody>{usuarios.map(u=><tr key={u.id}>
+<TD v={u.username}/>
+<TD v={u.nome_completo||u.nome}/>
+<TD v={<span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{u.perfil}</span>}/>
+<TD v={<span style={{background:u.bloqueado?'#1a0808':'#0d2010',color:u.bloqueado?'#f87171':'#4ade80',border:`1px solid ${u.bloqueado?'#5a1010':'#1a5a20'}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{u.bloqueado?'🔒 Bloqueado':'✓ Ativo'}</span>}/>
+<TD v={<button onClick={async()=>{const ns=prompt('Nova senha:');if(ns){const r=await fetch('/api/usuarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id,senha:ns,bloqueado:u.bloqueado,nome:u.nome,nome_completo:u.nome_completo})});if(r.ok){showT('Senha alterada!');load()}else showT('Erro',true)}}} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>🔑 Alterar</button>}/>
+<TD v={<div style={{display:'flex',gap:6}}>
+<button onClick={async()=>{const r=await fetch('/api/usuarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id,bloqueado:!u.bloqueado,senha:u.senha,nome:u.nome,nome_completo:u.nome_completo})});if(r.ok){showT(u.bloqueado?'Usuário desbloqueado!':'Usuário bloqueado!');load()}else showT('Erro',true)}} style={{...sB,height:26,padding:'0 10px',fontSize:11,color:u.bloqueado?'#4ade80':'#f87171',borderColor:u.bloqueado?'#1a5a20':'#5a1010'}}>{u.bloqueado?'🔓 Desbloquear':'🔒 Bloquear'}</button>
+{u.username!=='admin'&&<button onClick={async()=>{if(confirm('Excluir usuário?')){const r=await fetch('/api/usuarios',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id})});if(r.ok){showT('Usuário excluído');load()}else showT('Erro',true)}}} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button>}
+</div>}/>
+</tr>)}</tbody>
+</table>}
+</div></>
+
 if(aba==='historico')return <>
 {editMov&&<div style={{...sC,border:`1px solid ${G}`,marginBottom:16}}>
   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>

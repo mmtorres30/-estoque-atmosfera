@@ -10,5 +10,6 @@ export async function POST(req: NextRequest) {
     .eq('senha', senha)
     .single()
   if (error || !data) return NextResponse.json({ error: 'Usuário ou senha incorretos' }, { status: 401 })
+  if (data.bloqueado) return NextResponse.json({ error: 'Usuário bloqueado. Entre em contato com o administrador.' }, { status: 403 })
   return NextResponse.json({ usuario: data })
 }
