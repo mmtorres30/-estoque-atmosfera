@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import * as XLSX from 'xlsx'
-const LOC:Record<string,string>={central:'Estoque Central',frisa:'1° Andar Frisa',terceiro:'3° Andar',barfrisa:'Bar Frisa',barboate:'Bar Boate',barterceiro:'Bar 3° Andar',empresa:'Fornecedora'}
+const LOC:Record<string,string>={central:'Estoque Central',frisa:'Estoque 1° Andar',terceiro:'Estoque 3° Andar',barfrisa:'Bar Frisa',barboate:'Bar Boate',barterceiro:'Bar 3° Andar',empresa:'Fornecedora'}
 const UNIDS=['unidade(s)','caixa(s)','fardo(s)','barril(is)','garrafa(s)','lata(s)']
 const G='#C9A84C',G2='#F0D080',G3='#8B6914',BG='#0a0800',BG2='#110e02',BG3='#1a1608',BOR='#2e2810'
 const sI:any={width:'100%',height:38,border:`1px solid #2e2810`,borderRadius:6,padding:'0 12px',fontSize:13,background:'#110e02',color:'#F0D080',outline:'none',boxSizing:'border-box' as any}
@@ -296,8 +296,8 @@ return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Pro
 const navItems=[
 {id:'dashboard',icon:'⊞',label:'Painel'},
 ...(user?.perfil==='admin'||user?.perfil==='central'?[{id:'entrada-central',icon:'↓',label:'Entrada Central'},{id:'saida-central',icon:'↑',label:'Saída Central'}]:[]),
-...(user?.perfil==='admin'||user?.perfil==='frisa'?[{id:'est-frisa',icon:'▣',label:'1° Frisa'}]:[]),
-...(user?.perfil==='admin'||user?.perfil==='terceiro'?[{id:'est-terceiro',icon:'▣',label:'3° Andar'}]:[]),
+...(user?.perfil==='admin'||user?.perfil==='frisa'?[{id:'est-frisa',icon:'▣',label:'Estoque 1° Andar'}]:[]),
+...(user?.perfil==='admin'||user?.perfil==='terceiro'?[{id:'est-terceiro',icon:'▣',label:'Estoque 3° Andar'}]:[]),
 ...(user?.perfil==='admin'||user?.perfil==='barfrisa'?[{id:'bar-barfrisa',icon:'◈',label:'Bar Frisa'}]:[]),
 ...(user?.perfil==='admin'||user?.perfil==='barboate'?[{id:'bar-barboate',icon:'◈',label:'Bar Boate'}]:[]),
 ...(user?.perfil==='admin'||user?.perfil==='barterceiro'?[{id:'bar-barterceiro',icon:'◈',label:'Bar 3° Andar'}]:[]),
@@ -509,14 +509,7 @@ if(!user)return(
 <input type="password" value={lp} onChange={e=>setLp(e.target.value)} onKeyDown={e=>e.key==='Enter'&&login()} style={{...sI,height:42}} placeholder="Digite sua senha"/>
 </div>
 <button onClick={login} style={{width:'100%',height:46,background:`linear-gradient(135deg,${G3},${G},${G3})`,color:'#0a0800',border:'none',borderRadius:8,fontSize:13,fontWeight:800,cursor:'pointer',letterSpacing:3,textTransform:'uppercase'}}>ENTRAR</button>
-<div style={{marginTop:24,borderTop:`1px solid ${BOR}`,paddingTop:16}}>
-<p style={{fontSize:10,color:'#4a3a18',marginBottom:8,letterSpacing:1}}>ACESSO RÁPIDO:</p>
-<div style={{display:'flex',flexWrap:'wrap',gap:5}}>
-{[['admin','admin123'],['central','central123'],['frisa','frisa123'],['terceiro','terceiro123'],['barfrisa','bar123'],['barboate','bar456'],['barterceiro','bar789']].map(([u,p])=>(
-<span key={u} onClick={()=>{setLu(u);setLp(p)}} style={{background:BG2,color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'3px 12px',fontSize:11,cursor:'pointer'}}>{u}</span>
-))}
-</div>
-</div>
+
 </div>
 </div>
 )
