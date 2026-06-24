@@ -143,21 +143,6 @@ return <div style={{...sC,border:'1px solid #2a2a20'}}>
 
 function ProdutoForm({onAdd}:{onAdd:()=>void}){
 const [codProd,setCodProd]=useState('')
-const [editId,setEditId]=useState<string|null>(null)
-const [editCod,setEditCod]=useState('')
-const [editNome,setEditNome]=useState('')
-const [editCat,setEditCat]=useState('')
-const [editUnid,setEditUnid]=useState('unidade(s)')
-const [editMsg,setEditMsg]=useState('')
-const saveEdit=async()=>{
-  const r=await fetch('/api/produtos',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editId,cod_produto:editCod,nome:editNome,categoria:editCat,unidade_padrao:editUnid})})
-  if(!r.ok){setEditMsg('Erro ao salvar');return}
-  setEditMsg('Salvo!')
-  setEditId(null)
-  onAdd()
-  setTimeout(()=>setEditMsg(''),2000)
-}
-const [nome,setNome]=useState(''),[cat,setCat]=useState(''),[unid,setUnid]=useState('unidade(s)'),[msg,setMsg]=useState('')
 const submit=async()=>{
 if(!nome){setMsg('Digite o nome');return}
 const r=await fetch('/api/produtos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,categoria:cat,unidade_padrao:unid,cod_produto:codProd})})
@@ -267,6 +252,21 @@ const [movs,setMovs]=useState<any[]>([])
 const [ests,setEsts]=useState<any[]>([])
 const [emps,setEmps]=useState<any[]>([])
 const [prods,setProds]=useState<any[]>([])
+const [editId,setEditId]=useState<string|null>(null)
+const [editCod,setEditCod]=useState('')
+const [editNome,setEditNome]=useState('')
+const [editCat,setEditCat]=useState('')
+const [editUnid,setEditUnid]=useState('unidade(s)')
+const [editMsg,setEditMsg]=useState('')
+const saveEdit=async()=>{
+  const r=await fetch('/api/produtos',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:editId,cod_produto:editCod,nome:editNome,categoria:editCat,unidade_padrao:editUnid})})
+  if(!r.ok){setEditMsg('Erro ao salvar');return}
+  setEditMsg('Salvo!')
+  setEditId(null)
+  load()
+  setTimeout(()=>setEditMsg(''),2000)
+}
+const [nome,setNome]=useState(''),[cat,setCat]=useState(''),[unid,setUnid]=useState('unidade(s)'),[msg,setMsg]=useState('')
 const [usuarios,setUsuarios]=useState<any[]>([])
 const [toast,setToast]=useState(''),[toastE,setToastE]=useState(false)
 const [editMov,setEditMov]=useState<any>(null)
