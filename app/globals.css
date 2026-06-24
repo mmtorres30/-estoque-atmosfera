@@ -27,34 +27,56 @@ body {
 
 /* ===== MOBILE RESPONSIVO ===== */
 .sidebar-desktop { display: flex; flex-direction: column; }
-.mobile-nav { display: none; }
+.hamburger-btn { display: none; }
+.menu-overlay { display: none; }
 
 @media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 1001;
+    background: #111;
+    border: 1px solid #C9A84C55;
+    color: #C9A84C;
+    font-size: 22px;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
   .sidebar-desktop {
-    width: 60px !important;
-    min-width: 60px !important;
+    position: fixed !important;
+    top: 0;
+    left: -240px;
+    height: 100vh !important;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    width: 220px !important;
+    min-width: 220px !important;
   }
 
-  .sidebar-desktop img {
-    width: 36px !important;
+  .sidebar-desktop.menu-open {
+    left: 0 !important;
   }
 
-  .sidebar-desktop span:last-child {
-    display: none;
+  .menu-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: 999;
   }
 
-  .sidebar-desktop button {
-    justify-content: center !important;
-    padding: 10px !important;
-    gap: 0 !important;
+  .sidebar-desktop.menu-open .menu-overlay {
+    background: rgba(0,0,0,0.6);
   }
 
-  .sidebar-desktop button span:last-child {
-    display: none;
-  }
-
-  .sidebar-desktop .user-name,
-  .sidebar-desktop .sair-label {
-    display: none;
+  .app-root > div:last-child {
+    padding-top: 60px !important;
   }
 }
