@@ -518,7 +518,7 @@ if(!user)return(
 )
 return(
 <div style={{display:'flex',minHeight:'100vh',background:BG,fontFamily:'system-ui,sans-serif'}} className='app-root'>
-<div className={'sidebar-desktop'+(menuOpen?' menu-open':'')} style={{width:220,minWidth:220,background:'#111',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div className='menu-overlay' onClick={()=>setMenuOpen(false)}></div><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
+{menuOpen&&<div className='menu-overlay' onClick={()=>setMenuOpen(false)}></div>}<div className={'sidebar-desktop'+(menuOpen?' menu-open':'')} style={{width:220,minWidth:220,background:'#111',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
 <img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
