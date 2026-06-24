@@ -466,8 +466,8 @@ if(aba==='relatorio')return <div style={sC}>
 <button onClick={()=>{
 const t=document.getElementById('rel-table');
 const w=window.open('','_blank');
-w.document.write('<html><head><title>Relatório Atmosfera</title><style>body{font-family:Arial,sans-serif;font-size:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#1a1a0a;color:#C9A84C}tr:nth-child(even){background:#f9f9f0}h2{color:#1a1a0a}@media print{button{display:none}}</style></head><body><h2>Camarote Atmosfera — Relatório de Movimentações</h2><p>Gerado em: '+new Date().toLocaleString('pt-BR')+'</p>'+t.outerHTML+'<br/><button onclick="window.print()">Imprimir</button></body></html>');
-w.document.close();w.focus();w.print();
+if(w){w.document.write('<html><head><title>Relatório Atmosfera</title><style>body{font-family:Arial,sans-serif;font-size:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#1a1a0a;color:#C9A84C}tr:nth-child(even){background:#f9f9f0}h2{color:#1a1a0a}@media print{button{display:none}}</style></head><body><h2>Camarote Atmosfera — Relatório de Movimentações</h2><p>Gerado em: '+new Date().toLocaleString('pt-BR')+'</p>'+t.outerHTML+'<br/><button onclick="window.print()">Imprimir</button></body></html>');
+w.document.close();w.focus();w.print();}
 }} style={{...sB,height:34,padding:'0 14px',fontSize:11}}>🖨️ Imprimir PDF</button>
 <button onClick={()=>{
 const rFil=movs.filter(m=>{
