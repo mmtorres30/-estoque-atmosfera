@@ -64,7 +64,7 @@ return <div style={sC}>
 </div>
 }
 
-function SaidaForm({orig,dests,prods,onReg}:{orig:string,dests:{value:string,label:string}[],prods:any[],onReg:(t:string,d:any)=>Promise<boolean>}){
+function SaidaForm({orig,dests,prods,onReg,onSuccess}:{orig:string,dests:{value:string,label:string}[],prods:any[],onReg:(t:string,d:any)=>Promise<boolean>,onSuccess:()=>void}){
 const [cod,setCod]=useState(''),[prod,setProd]=useState(''),[qty,setQty]=useState(''),[unid,setUnid]=useState('unidade(s)'),[dest,setDest]=useState(''),[resp,setResp]=useState(''),[obs,setObs]=useState('')
 const [erroSaida,setErroSaida]=useState('')
 const submit=async()=>{
@@ -72,8 +72,10 @@ if(!prod){setErroSaida('Selecione um produto');return}
 if(!qty||parseInt(qty)<1){setErroSaida('Informe a quantidade');return}
 if(!dest){setErroSaida('Selecione o destino');return}
 setErroSaida('')
-const ok=await onReg('saida',{cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,responsavel:resp,observacao:obs,data:new Date().toISOString()})
-if(ok){setCod('');setProd('');setQty('');setUnid('unidade(s)');setDest('');setResp('');setObs('')}
+const r=await fetch('/api/movimentos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:'saida',cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,responsavel:resp,observacao:obs,data:new Date().toISOString()})})
+const d=await r.json()
+if(!r.ok){setErroSaida(d.error||'Erro ao registrar saída');return}
+setCod('');setProd('');setQty('');setUnid('unidade(s)');setDest('');setResp('');setObs('');setErroSaida('');onSuccess()
 }
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>↑ REGISTRAR SAÍDA</p>
@@ -198,6 +200,11 @@ if(!r.ok){
 showT('Registrado com sucesso!');load();return true
 }
 const delEmp=async(id:string)=>{await fetch('/api/empresas',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});showT('Removida');load()}
+const delMov=async(id:string)=>{
+if(!confirm('Tem certeza que deseja excluir esta movimentação? Os estoques não serão revertidos automaticamente.'))return
+const r=await fetch('/api/movimentos/'+id,{method:'DELETE'})
+if(r.ok){showT('Movimentação excluída');load()}else{showT('Erro ao excluir',true)}
+}
 const delProd=async(id:string)=>{await fetch('/api/produtos',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});showT('Removido');load()}
 const fdt=(dt:string)=>new Date(dt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
 
@@ -338,13 +345,13 @@ if(aba==='dashboard'){
   </>
 }
 if(aba==='entrada-central')return <>{canEdit('central')&&<EntradaForm dest="central" emps={emps} prods={prods} onReg={reg}/>}<div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — ESTOQUE CENTRAL</p><button style={sBP} onClick={()=>exportarExcel('central')}>📊 Exportar Excel</button></div><TblEst loc="central"/></div></>
-if(aba==='saida-central')return <>{canEdit('central')&&<SaidaForm orig="central" dests={[{value:'frisa',label:'1° Andar Frisa'},{value:'terceiro',label:'3° Andar'}]} prods={prods} onReg={reg}/>}</>
-if(aba==='est-frisa')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 1° ANDAR FRISA</p><button style={sBP} onClick={()=>exportarExcel('frisa')}>📊 Exportar Excel</button></div><TblEst loc="frisa"/></div>{canEdit('frisa')&&<SaidaForm orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg}/>}</>
-if(aba==='est-terceiro')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 3° ANDAR</p><button style={sBP} onClick={()=>exportarExcel('terceiro')}>📊 Exportar Excel</button></div><TblEst loc="terceiro"/></div>{canEdit('terceiro')&&<SaidaForm orig="terceiro" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg}/>}</>
+if(aba==='saida-central')return <>{canEdit('central')&&<SaidaForm orig="central" dests={[{value:'frisa',label:'1° Andar Frisa'},{value:'terceiro',label:'3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
+if(aba==='est-frisa')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 1° ANDAR FRISA</p><button style={sBP} onClick={()=>exportarExcel('frisa')}>📊 Exportar Excel</button></div><TblEst loc="frisa"/></div>{canEdit('frisa')&&<SaidaForm orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
+if(aba==='est-terceiro')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 3° ANDAR</p><button style={sBP} onClick={()=>exportarExcel('terceiro')}>📊 Exportar Excel</button></div><TblEst loc="terceiro"/></div>{canEdit('terceiro')&&<SaidaForm orig="terceiro" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
 if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><button style={sBP} onClick={()=>exportarExcel(k)}>📊 Exportar Excel</button></div><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
 if(aba==='produtos')return <><ProdutoForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Nome','Categoria','Unidade',''].map(TH)}</tr></thead><tbody>{prods.map(p=><tr key={p.id}><TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/><TD v={canEdit('central')&&<button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
 if(aba==='empresas')return <><EmpresaForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>{emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map(TH)}</tr></thead><tbody>{emps.map(e=><tr key={e.id}>{[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}<TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
-if(aba==='historico')return <div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs'].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/></tr>)}</tbody></table></div>}</div>
+if(aba==='historico')return <div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs',''].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/><TD v={<button onClick={()=>delMov(m.id)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button>}/></tr>)}</tbody></table></div>}</div>
 }
 if(!user)return(
 <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#1a1200 0%,${BG} 70%)`}}>
@@ -378,7 +385,8 @@ return(
 <div style={{display:'flex',minHeight:'100vh',background:BG,fontFamily:'system-ui,sans-serif'}}>
 <div style={{width:220,background:BG2,borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',flexShrink:0}}>
 <div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
-<img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
+<img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto 8px'}}/>
+<button onClick={()=>load()} style={{...sB,width:'100%',fontSize:11,letterSpacing:1,marginTop:4}}>🔄 Atualizar dados</button>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
 {navItems.map(n=>(
