@@ -66,12 +66,18 @@ return <div style={sC}>
 
 function SaidaForm({orig,dests,prods,onReg}:{orig:string,dests:{value:string,label:string}[],prods:any[],onReg:(t:string,d:any)=>Promise<boolean>}){
 const [cod,setCod]=useState(''),[prod,setProd]=useState(''),[qty,setQty]=useState(''),[unid,setUnid]=useState('unidade(s)'),[dest,setDest]=useState(''),[resp,setResp]=useState(''),[obs,setObs]=useState('')
+const [erroSaida,setErroSaida]=useState('')
 const submit=async()=>{
-await onReg('saida',{cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,responsavel:resp,observacao:obs,data:new Date().toISOString()})
-setCod('');setProd('');setQty('');setUnid('unidade(s)');setDest('');setResp('');setObs('')
+if(!prod){setErroSaida('Selecione um produto');return}
+if(!qty||parseInt(qty)<1){setErroSaida('Informe a quantidade');return}
+if(!dest){setErroSaida('Selecione o destino');return}
+setErroSaida('')
+const ok=await onReg('saida',{cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,responsavel:resp,observacao:obs,data:new Date().toISOString()})
+if(ok){setCod('');setProd('');setQty('');setUnid('unidade(s)');setDest('');setResp('');setObs('')}
 }
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>↑ REGISTRAR SAÍDA</p>
+{erroSaida&&<div style={{background:'#1a0808',border:'1px solid #5a1010',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#fca5a5',marginBottom:14,display:'flex',alignItems:'center',gap:8}}><span style={{fontSize:16}}>⚠️</span>{erroSaida}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
 <div>{LBL('CÓDIGO')}<input style={sI} value={cod} onChange={e=>setCod(e.target.value)}/></div>
 <div>{LBL('PRODUTO')}<select style={sI} value={prod} onChange={e=>setProd(e.target.value)}><option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}</select></div>
