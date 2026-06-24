@@ -432,8 +432,7 @@ return(
 <div style={{display:'flex',minHeight:'100vh',background:BG,fontFamily:'system-ui,sans-serif'}}>
 <div style={{width:220,background:BG2,borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',flexShrink:0}}>
 <div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
-<img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto 8px'}}/>
-<button onClick={()=>{ load(); showT('Atualizando...'); }} style={{...sB,width:'100%',fontSize:11,letterSpacing:1,marginTop:4}}>🔄 Atualizar</button>
+<img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
 {navItems.map(n=>(
@@ -449,7 +448,7 @@ return(
 </div>
 <div style={{flex:1,overflow:'auto'}}>
 <div style={{padding:'24px',maxWidth:1100,margin:'0 auto'}}>
-<p style={{fontSize:11,color:'#4a3a18',letterSpacing:2,textTransform:'uppercase',marginBottom:20}}>{navItems.find(n=>n.id===aba)?.label||'Painel'}</p>
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}><p style={{fontSize:11,color:'#4a3a18',letterSpacing:2,textTransform:'uppercase',margin:0}}>{navItems.find(n=>n.id===aba)?.label||'Painel'}</p><button onClick={()=>{load();showT('Dados atualizados!')}} style={{...sB,height:32,padding:'0 14px',fontSize:11,letterSpacing:1}}>🔄 Atualizar</button></div>
 {renderAba()}
 </div>
 </div>
