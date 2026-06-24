@@ -231,6 +231,12 @@ const [usuarios,setUsuarios]=useState<any[]>([])
 const [toast,setToast]=useState(''),[toastE,setToastE]=useState(false)
 const [editMov,setEditMov]=useState<any>(null)
 const [menuOpen,setMenuOpen]=useState(false)
+const [rDe,setRDe]=useState('')
+const [rAte,setRAte]=useState('')
+const [rLocal,setRLocal]=useState('')
+const [rProd,setRProd]=useState('')
+const [rEmp,setREmp]=useState('')
+const [rUser,setRUser]=useState('')
 const showT=(m:string,e=false)=>{setToast(m);setToastE(e);setTimeout(()=>setToast(''),3000)}
 const load=async()=>{
 try{
@@ -307,6 +313,7 @@ const navItems=[
 ...(user?.perfil==='admin'||user?.perfil==='central'?[{id:'empresas',icon:'◉',label:'Empresas'},{id:'produtos',icon:'▤',label:'Produtos'}]:[]),
 ...(user?.perfil==='admin'?[{id:'usuarios',icon:'👤',label:'Usuários'}]:[]),
 {id:'historico',icon:'≡',label:'Histórico'},
+{id:'relatorio',icon:'📊',label:'Relatório'},
 ]
 const renderAba=()=>{
 if(aba==='dashboard'){
@@ -452,6 +459,74 @@ if(aba==='usuarios')return <><UsuarioForm onAdd={load}/><div style={sC}>
 </table>}
 </div></>
 
+if(aba==='relatorio')return <div style={sC}>
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20,flexWrap:'wrap',gap:10}}>
+<p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>RELATÓRIO DE MOVIMENTAÇÕES</p>
+<div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+<button onClick={()=>{
+const t=document.getElementById('rel-table');
+const w=window.open('','_blank');
+w.document.write('<html><head><title>Relatório Atmosfera</title><style>body{font-family:Arial,sans-serif;font-size:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#1a1a0a;color:#C9A84C}tr:nth-child(even){background:#f9f9f0}h2{color:#1a1a0a}@media print{button{display:none}}</style></head><body><h2>Camarote Atmosfera — Relatório de Movimentações</h2><p>Gerado em: '+new Date().toLocaleString('pt-BR')+'</p>'+t.outerHTML+'<br/><button onclick="window.print()">Imprimir</button></body></html>');
+w.document.close();w.focus();w.print();
+}} style={{...sB,height:34,padding:'0 14px',fontSize:11}}>🖨️ Imprimir PDF</button>
+<button onClick={()=>{
+const rFil=movs.filter(m=>{
+let ok=true;
+if(rLocal&&m.origem!==rLocal&&m.destino!==rLocal)ok=false;
+if(rProd&&!m.produto.toLowerCase().includes(rProd.toLowerCase()))ok=false;
+if(rEmp&&m.empresa_id){const emp=emps.find(e=>e.id===m.empresa_id);if(!emp||!emp.nome.toLowerCase().includes(rEmp.toLowerCase()))ok=false;}
+if(rUser&&m.responsavel&&!m.responsavel.toLowerCase().includes(rUser.toLowerCase()))ok=false;
+if(rDe&&new Date(m.data)<new Date(rDe))ok=false;
+if(rAte&&new Date(m.data)>new Date(rAte+'T23:59:59'))ok=false;
+return ok;
+});
+const wb=XLSX.utils.book_new();
+const ws=XLSX.utils.json_to_sheet(rFil.length>0?rFil.map(m=>({'Data':fdt(m.data),'Tipo':m.tipo,'Produto':m.produto,'Quantidade':m.quantidade,'Unidade':m.unidade,'Origem':LOC[m.origem]||m.origem,'Destino':LOC[m.destino]||m.destino,'NF':m.nf_numero||'','Responsável':m.responsavel||'','Observação':m.observacao||''})):[{'Data':'','Tipo':'Sem movimentações','Produto':'','Quantidade':0,'Unidade':'','Origem':'','Destino':'','NF':'','Responsável':'','Observação':''}]);
+XLSX.utils.book_append_sheet(wb,ws,'Relatório');
+XLSX.writeFile(wb,'relatorio-atmosfera.xlsx');
+}} style={{...sB,height:34,padding:'0 14px',fontSize:11,background:'#1a4a1a',borderColor:'#4a8a4a',color:'#8aba8a'}}>📥 Excel</button>
+</div>
+</div>
+<div style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:16}}>
+<input value={rDe} onChange={e=>setRDe(e.target.value)} type="date" style={{...sI,height:34,fontSize:11,width:140}} placeholder="Data início"/>
+<input value={rAte} onChange={e=>setRAte(e.target.value)} type="date" style={{...sI,height:34,fontSize:11,width:140}} placeholder="Data fim"/>
+<select value={rLocal} onChange={e=>setRLocal(e.target.value)} style={{...sI,height:34,fontSize:11}}>
+<option value="">Todos os locais</option>
+{Object.entries(LOC).map(([k,v])=><option key={k} value={k}>{v as string}</option>)}
+</select>
+<input value={rProd} onChange={e=>setRProd(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Produto..."/>
+<input value={rEmp} onChange={e=>setREmp(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Empresa..."/>
+<input value={rUser} onChange={e=>setRUser(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Usuário/Responsável..."/>
+<button onClick={()=>{setRDe('');setRAte('');setRLocal('');setRProd('');setREmp('');setRUser('')}} style={{...sB,height:34,padding:'0 12px',fontSize:11,background:'transparent',borderColor:'#555',color:'#888'}}>Limpar</button>
+</div>
+{(()=>{const rFil=movs.filter(m=>{
+let ok=true;
+if(rLocal&&m.origem!==rLocal&&m.destino!==rLocal)ok=false;
+if(rProd&&!m.produto.toLowerCase().includes(rProd.toLowerCase()))ok=false;
+if(rEmp&&m.empresa_id){const emp=emps.find(e=>e.id===m.empresa_id);if(!emp||!emp.nome.toLowerCase().includes(rEmp.toLowerCase()))ok=false;}
+if(rUser&&m.responsavel&&!m.responsavel.toLowerCase().includes(rUser.toLowerCase()))ok=false;
+if(rDe&&new Date(m.data)<new Date(rDe))ok=false;
+if(rAte&&new Date(m.data)>new Date(rAte+'T23:59:59'))ok=false;
+return ok;
+});
+return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rFil.length} movimentação(ões) encontrada(s)</p>
+<div style={{overflowX:'auto'}}><table id="rel-table" style={{width:'100%',borderCollapse:'collapse'}}>
+<thead><tr>{['Data','Tipo','Produto','Qtd','Unid','Origem','Destino','NF','Responsável','Usuário','Obs'].map(h=><th key={h} style={{fontSize:10,color:G,letterSpacing:1,padding:'8px 10px',borderBottom:`1px solid ${BOR}`,textAlign:'left',whiteSpace:'nowrap'}}>{h}</th>)}</tr></thead>
+<tbody>{rFil.length===0?<tr><td colSpan={11} style={{textAlign:'center',padding:24,color:'#5a4a20',fontSize:13}}>Nenhuma movimentação encontrada</td></tr>:rFil.map(m=><tr key={m.id} style={{borderBottom:`1px solid ${BOR}22`}}>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{fdt(m.data)}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:m.tipo==='entrada'?'#1a3a1a':m.tipo==='saida'?'#3a1a1a':m.tipo==='transferencia'?'#1a1a3a':'#2a2a1a',color:m.tipo==='entrada'?'#4aaa4a':m.tipo==='saida'?'#aa4a4a':m.tipo==='transferencia'?'#4a4aaa':'#aaaa4a',padding:'2px 8px',borderRadius:4,fontSize:10,whiteSpace:'nowrap'}}>{m.tipo}</span></td>
+<td style={{fontSize:11,padding:'7px 10px'}}>{m.produto}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}>{m.quantidade}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}>{m.unidade}</td>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{LOC[m.origem]||m.origem||'-'}</td>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{LOC[m.destino]||m.destino||'-'}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}>{m.nf_numero||'-'}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}>{m.responsavel||'-'}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}>{m.usuario_id||'-'}</td>
+<td style={{fontSize:11,padding:'7px 10px'}}>{m.observacao||'-'}</td>
+</tr>)}</tbody>
+</table></div></>})()}
+</div>
 if(aba==='historico')return <>
 {editMov&&<div style={{...sC,border:`1px solid ${G}`,marginBottom:16}}>
   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
