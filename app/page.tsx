@@ -142,18 +142,24 @@ return <div style={{...sC,border:'1px solid #2a2a20'}}>
 }
 
 function ProdutoForm({onAdd}:{onAdd:()=>void}){
+const [codProd,setCodProd]=useState('')
 const [nome,setNome]=useState(''),[cat,setCat]=useState(''),[unid,setUnid]=useState('unidade(s)'),[msg,setMsg]=useState('')
 const submit=async()=>{
 if(!nome){setMsg('Digite o nome');return}
-const r=await fetch('/api/produtos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,categoria:cat,unidade_padrao:unid})})
+const r=await fetch('/api/produtos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,categoria:cat,unidade_padrao:unid,cod_produto:codProd})})
 if(!r.ok){setMsg('Erro ou produto já existe');return}
-setNome('');setCat('');setUnid('unidade(s)');setMsg('Produto cadastrado!');onAdd()
+setNome('');setCat('');setUnid('unidade(s)');setCodProd('');setMsg('Produto cadastrado!');onAdd()
 setTimeout(()=>setMsg(''),2000)
 }
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>▤ CADASTRAR NOVO PRODUTO</p>
 {msg&&<div style={{background:msg.includes('Erro')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
+<div style={{gridColumn:'1/-1'}}>{LBL('CODIGO DO PRODUTO')}
+<div style={{display:'flex',gap:8,alignItems:'center'}}>
+<input style={sI} value={codProd} onChange={e=>setCodProd(e.target.value)} placeholder="Ex: AGU-500"/>
+<Scanner onScan={(code)=>{setCodProd(code)}}/>
+</div></div>
 <div>{LBL('NOME DO PRODUTO *')}<input style={sI} value={nome} onChange={e=>setNome(e.target.value)} placeholder="Ex: Gin 1L"/></div>
 <div>{LBL('CATEGORIA')}<input style={sI} value={cat} onChange={e=>setCat(e.target.value)} placeholder="Ex: Destilado"/></div>
 <div>{LBL('UNIDADE PADRÃO')}<select style={sI} value={unid} onChange={e=>setUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
