@@ -536,6 +536,7 @@ return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rows.length} r
 <input value={rEmp} onChange={e=>setREmp(e.target.value)} style={{...sI,height:36,fontSize:11,width:160}} placeholder="🏢 Empresa..."/>
 <input value={rUser} onChange={e=>setRUser(e.target.value)} style={{...sI,height:36,fontSize:11,width:180}} placeholder="👤 Usuário/Responsável..."/>
 <button onClick={()=>{setRDe('');setRAte('');setRLocal('');setRProd('');setREmp('');setRUser('');setRTipo('')}} style={{...sB,height:36,padding:'0 16px',fontSize:11,background:'transparent',borderColor:`${G}44`,color:G}}>✕ Limpar</button>
+</div>
 </div>}
 {(()=>{const rFil=movs.filter(m=>{
 let ok=true;
