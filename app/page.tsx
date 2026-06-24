@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import * as XLSX from 'xlsx'
+import Scanner from './components/Scanner'
 const LOC:Record<string,string>={central:'Estoque Central',frisa:'Estoque 1° Andar',terceiro:'Estoque 3° Andar',barfrisa:'Bar Frisa',barboate:'Bar Boate',barterceiro:'Bar 3° Andar',empresa:'Fornecedora'}
 const UNIDS=['unidade(s)','caixa(s)','fardo(s)','barril(is)','garrafa(s)','lata(s)']
 const G='#C9A84C',G2='#F0D080',G3='#8B6914',BG='#0a0800',BG2='#110e02',BG3='#1a1608',BOR='#2e2810'
@@ -62,7 +63,11 @@ return <div style={sC}>
 <input ref={fileRef} type="file" accept="image/*,.pdf" style={{display:'none'}} onChange={handleFile}/>
 </div>
 </>}
-<div>{LBL('CÓDIGO')}<input style={sI} value={cod} onChange={e=>setCod(e.target.value)}/></div>
+<div style={{gridColumn:'1/-1'}}>{LBL('CÓDIGO')}
+<div style={{display:'flex',gap:8,alignItems:'center'}}>
+<input style={sI} value={cod} onChange={e=>{setCod(e.target.value);const p=prods.find((x:any)=>x.cod_produto===e.target.value||x.nome===e.target.value);if(p){setProd(p.nome||p.produto||'')}}} placeholder="Digite ou escaneie"/>
+<Scanner onScan={(code)=>{setCod(code);const p=prods.find((x:any)=>x.cod_produto===code||x.nome===code||x.produto===code);if(p){setProd(p.nome||p.produto||'')}}}/>
+</div></div>
 <div>{LBL('PRODUTO')}<select style={sI} value={prod} onChange={e=>setProd(e.target.value)}><option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}</select></div>
 <div>{LBL('QUANTIDADE')}<input style={sI} value={qty} onChange={e=>{setQty(e.target.value);calcTot(e.target.value,vUnit)}} placeholder="Ex: 24"/></div>
 <div>{LBL('UNIDADE')}<select style={sI} value={unid} onChange={e=>setUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
@@ -94,7 +99,11 @@ return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>↑ REGISTRAR SAÍDA</p>
 {erroSaida&&<div style={{background:'#1a0808',border:'1px solid #5a1010',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#fca5a5',marginBottom:14,display:'flex',alignItems:'center',gap:8}}><span style={{fontSize:16}}>⚠️</span>{erroSaida}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-<div>{LBL('CÓDIGO')}<input style={sI} value={cod} onChange={e=>setCod(e.target.value)}/></div>
+<div style={{gridColumn:'1/-1'}}>{LBL('CÓDIGO')}
+<div style={{display:'flex',gap:8,alignItems:'center'}}>
+<input style={sI} value={cod} onChange={e=>{setCod(e.target.value);const p=prods.find((x:any)=>x.cod_produto===e.target.value||x.nome===e.target.value);if(p){setProd(p.nome||p.produto||'')}}} placeholder="Digite ou escaneie"/>
+<Scanner onScan={(code)=>{setCod(code);const p=prods.find((x:any)=>x.cod_produto===code||x.nome===code||x.produto===code);if(p){setProd(p.nome||p.produto||'')}}}/>
+</div></div>
 <div>{LBL('PRODUTO')}<select style={sI} value={prod} onChange={e=>setProd(e.target.value)}><option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}</select></div>
 <div>{LBL('QUANTIDADE')}<input style={sI} value={qty} onChange={e=>setQty(e.target.value)} placeholder="Ex: 12"/></div>
 <div>{LBL('UNIDADE')}<select style={sI} value={unid} onChange={e=>setUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
