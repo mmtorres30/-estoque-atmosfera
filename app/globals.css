@@ -30,48 +30,31 @@ body {
 .mobile-nav { display: none; }
 
 @media (max-width: 768px) {
-  .sidebar-desktop { display: none !important; }
-
-  .mobile-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 62px;
-    background: #111;
-    border-top: 1px solid #C9A84C44;
-    z-index: 999;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
+  .sidebar-desktop {
+    width: 60px !important;
+    min-width: 60px !important;
   }
 
-  .mobile-nav::-webkit-scrollbar { display: none; }
-
-  .mobile-nav-btn {
-    flex: 1;
-    min-width: 56px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    color: #6a6a5a;
-    cursor: pointer;
-    padding: 6px 4px;
-    transition: color 0.2s;
-    gap: 2px;
+  .sidebar-desktop img {
+    width: 36px !important;
   }
 
-  .mobile-nav-btn.active {
-    color: #C9A84C;
-    border-top: 2px solid #C9A84C;
+  .sidebar-desktop span:last-child {
+    display: none;
   }
 
-  .mobile-nav-btn:active { opacity: 0.7; }
+  .sidebar-desktop button {
+    justify-content: center !important;
+    padding: 10px !important;
+    gap: 0 !important;
+  }
 
-  /* Conteúdo principal no mobile */
-  .app-root { flex-direction: column !important; }
+  .sidebar-desktop button span:last-child {
+    display: none;
+  }
+
+  .sidebar-desktop .user-name,
+  .sidebar-desktop .sair-label {
+    display: none;
+  }
 }

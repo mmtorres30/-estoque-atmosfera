@@ -521,7 +521,7 @@ return(
 <div className='sidebar-desktop' style={{width:220,minWidth:220,background:'#111',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
 <img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
 </div>
-<div style={{flex:1,padding:'12px 8px'}}>
+<div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
 {navItems.map(n=>(
 <button key={n.id} onClick={()=>setAba(n.id)} style={{width:'100%',display:'flex',alignItems:'center',gap:10,padding:'10px 12px',marginBottom:2,border:'none',borderRadius:8,cursor:'pointer',background:aba===n.id?`linear-gradient(135deg,${G3}33,${G}22)`:'transparent',color:aba===n.id?G2:'#5a4a20',fontWeight:aba===n.id?700:400,fontSize:13,textAlign:'left',borderLeft:aba===n.id?`2px solid ${G}`:'2px solid transparent'}}>
 <span style={{fontSize:16,width:20,textAlign:'center'}}>{n.icon}</span>{n.label}
@@ -533,23 +533,12 @@ return(
 <button onClick={()=>setUser(null)} style={{...sB,width:'100%',fontSize:11,letterSpacing:1}}>SAIR</button>
 </div>
 </div>
-<div style={{flex:1,overflow:'auto',paddingBottom:'clamp(60px,8vw,70px)'}}>
+<div style={{flex:1,overflow:'auto'}}>
 <div style={{padding:'24px',maxWidth:1100,margin:'0 auto'}}>
 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}><p style={{fontSize:11,color:'#4a3a18',letterSpacing:2,textTransform:'uppercase',margin:0}}>{navItems.find(n=>n.id===aba)?.label||'Painel'}</p><button onClick={()=>{setAba('dashboard');load()}} style={{...sB,height:32,padding:'0 14px',fontSize:11,letterSpacing:1}}>🔄 Atualizar</button></div>
 {renderAba()}
 </div>
-<nav className='mobile-nav'>
-{navItems.map(n=>(
-<button key={n.id} onClick={()=>setAba(n.id)} className={'mobile-nav-btn'+(aba===n.id?' active':'')}>
-<span style={{fontSize:20}}>{n.icon}</span>
-<span style={{fontSize:9,letterSpacing:1,marginTop:2}}>{n.label.toUpperCase()}</span>
-</button>
-))}
-<button onClick={()=>setUser(null)} className='mobile-nav-btn'>
-<span style={{fontSize:20}}>🚪</span>
-<span style={{fontSize:9,letterSpacing:1,marginTop:2}}>SAIR</span>
-</button>
-</nav>
+
 </div>
 </div>
 )
