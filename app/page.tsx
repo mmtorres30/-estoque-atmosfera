@@ -433,7 +433,7 @@ return(
 <div style={{width:220,background:BG2,borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',flexShrink:0}}>
 <div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
 <img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto 8px'}}/>
-<button onClick={async()=>{await load();showT("Dados atualizados!")}} style={{...sB,width:'100%',fontSize:11,letterSpacing:1,marginTop:4}}>🔄 Atualizar dados</button>
+<button onClick={()=>{load().then(()=>showT("Dados atualizados!")).catch(()=>showT("Erro ao atualizar",true))}} style={{...sB,width:'100%',fontSize:11,letterSpacing:1,marginTop:4}}>🔄 Atualizar</button>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
 {navItems.map(n=>(
