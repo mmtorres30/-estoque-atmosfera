@@ -37,12 +37,13 @@ const [unid,setUnid]=useState('unidade(s)')
 const [orig,setOrig]=useState('frisa')
 const [obs,setObs]=useState('')
 const [nfFile,setNfFile]=useState('')
+const [dataEnt,setDataEnt]=useState('')
 const fileRef=useRef<HTMLInputElement>(null)
 const calcTot=(q:string,v:string)=>{const qn=parseFloat(q)||0,vn=unMaskMoeda(v);if(qn&&vn)setVTot(maskMoeda(String(Math.round(qn*vn*100))))}
 const handleFile=(e:React.ChangeEvent<HTMLInputElement>)=>{const f=e.target.files?.[0];if(f)setNfFile(f.name)}
 const submit=async()=>{
-await onReg('entrada',{empresa_id:empresa,nf_numero:nf,nf_arquivo:nfFile,valor_unitario:unMaskMoeda(vUnit),valor_total:unMaskMoeda(vTot),cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:dest==='central'?'empresa':orig,destino:dest,observacao:obs,data:new Date().toISOString()})
-setEmpresa('');setNf('');setVUnit('');setVTot('');setCod('');setProd('');setQty('');setUnid('unidade(s)');setOrig('frisa');setObs('');setNfFile('')
+await onReg('entrada',{empresa_id:empresa,nf_numero:nf,nf_arquivo:nfFile,valor_unitario:unMaskMoeda(vUnit),valor_total:unMaskMoeda(vTot),cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:dest==='central'?'empresa':orig,destino:dest,observacao:obs,data:dataEnt?new Date(dataEnt).toISOString():new Date().toISOString()})
+setEmpresa('');setNf('');setVUnit('');setVTot('');setCod('');setProd('');setQty('');setUnid('unidade(s)');setOrig('frisa');setObs('');setNfFile('');setDataEnt('')
 }
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>↓ REGISTRAR ENTRADA</p>
@@ -66,7 +67,7 @@ return <div style={sC}>
 <div>{LBL('QUANTIDADE')}<input style={sI} value={qty} onChange={e=>{setQty(e.target.value);calcTot(e.target.value,vUnit)}} placeholder="Ex: 24"/></div>
 <div>{LBL('UNIDADE')}<select style={sI} value={unid} onChange={e=>setUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
 {dest!=='central'&&<div>{LBL('DE QUAL DEPÓSITO')}<select style={sI} value={orig} onChange={e=>setOrig(e.target.value)}><option value="frisa">1° Andar Frisa</option><option value="terceiro">3° Andar</option></select></div>}
-<div style={{gridColumn:'1/-1'}}>{LBL('OBSERVAÇÃO')}<input style={sI} value={obs} onChange={e=>setObs(e.target.value)}/></div>
+<div>{LBL('DATA (opcional)')}<input type='date' style={sI} value={dataEnt} onChange={e=>setDataEnt(e.target.value)}/></div><div style={{gridColumn:'1/-1'}}>{LBL('OBSERVAÇÃO')}<input style={sI} value={obs} onChange={e=>setObs(e.target.value)}/></div>
 </div>
 <div style={{display:'flex',justifyContent:'flex-end',marginTop:16,gap:10}}>
 <button style={sB} onClick={()=>{setEmpresa('');setNf('');setVUnit('');setVTot('');setCod('');setProd('');setQty('');setObs('');setNfFile('')}}>Limpar</button>
@@ -76,6 +77,7 @@ return <div style={sC}>
 }
 
 function SaidaForm({orig,dests,prods,onReg,onSuccess}:{orig:string,dests:{value:string,label:string}[],prods:any[],onReg:(t:string,d:any)=>Promise<boolean>,onSuccess:()=>void}){
+const [dataSai,setDataSai]=useState('')
 const [cod,setCod]=useState(''),[prod,setProd]=useState(''),[qty,setQty]=useState(''),[unid,setUnid]=useState('unidade(s)'),[dest,setDest]=useState(''),[resp,setResp]=useState(''),[obs,setObs]=useState('')
 const [erroSaida,setErroSaida]=useState('')
 const submit=async()=>{
@@ -83,7 +85,7 @@ if(!prod){setErroSaida('Selecione um produto');return}
 if(!qty||parseInt(qty)<1){setErroSaida('Informe a quantidade');return}
 if(!dest){setErroSaida('Selecione o destino');return}
 setErroSaida('')
-const r=await fetch('/api/movimentos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:'saida',cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,responsavel:resp,observacao:obs,data:new Date().toISOString()})})
+const r=await fetch('/api/movimentos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:'saida',cod_produto:cod,produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,responsavel:resp,observacao:obs,data:dataSai?new Date(dataSai).toISOString():new Date().toISOString()})})
 const d=await r.json()
 if(!r.ok){setErroSaida(d.error||'Erro ao registrar saída');return}
 setCod('');setProd('');setQty('');setUnid('unidade(s)');setDest('');setResp('');setObs('');setErroSaida('');onSuccess()
@@ -98,19 +100,20 @@ return <div style={sC}>
 <div>{LBL('UNIDADE')}<select style={sI} value={unid} onChange={e=>setUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
 <div>{LBL('DESTINO')}<select style={sI} value={dest} onChange={e=>setDest(e.target.value)}><option value="">Selecione</option>{dests.map(d=><option key={d.value} value={d.value}>{d.label}</option>)}</select></div>
 <div>{LBL('RESPONSÁVEL')}<input style={sI} value={resp} onChange={e=>setResp(e.target.value)}/></div>
-<div style={{gridColumn:'1/-1'}}>{LBL('OBSERVAÇÃO')}<input style={sI} value={obs} onChange={e=>setObs(e.target.value)}/></div>
+<div>{LBL('DATA (opcional)')}<input type='date' style={sI} value={dataSai} onChange={e=>setDataSai(e.target.value)}/></div><div style={{gridColumn:'1/-1'}}>{LBL('OBSERVAÇÃO')}<input style={sI} value={obs} onChange={e=>setObs(e.target.value)}/></div>
 </div>
 <div style={{display:'flex',justifyContent:'flex-end',marginTop:16,gap:10}}>
-<button style={sB} onClick={()=>{setCod('');setProd('');setQty('');setDest('');setResp('');setObs('')}}>Limpar</button>
+<button style={sB} onClick={()=>{setCod('');setProd('');setQty('');setDest('');setResp('');setObs('');setDataSai('')}}>Limpar</button>
 <button style={sBP} onClick={submit}>✓ Registrar Saída</button>
 </div>
 </div>
 }
 
 function DevolucaoForm({orig,prods,onReg}:{orig:string,prods:any[],onReg:(t:string,d:any)=>Promise<boolean>}){
+const [dataDevol,setDataDevol]=useState('')
 const [prod,setProd]=useState(''),[qty,setQty]=useState(''),[unid,setUnid]=useState('unidade(s)'),[dest,setDest]=useState(''),[obs,setObs]=useState('')
 const submit=async()=>{
-await onReg('devolucao',{produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,observacao:obs,data:new Date().toISOString()})
+await onReg('devolucao',{produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,destino:dest,observacao:obs,data:dataDevol?new Date(dataDevol).toISOString():new Date().toISOString()})
 setProd('');setQty('');setUnid('unidade(s)');setDest('');setObs('')
 }
 return <div style={{...sC,border:'1px solid #2a2a20'}}>
@@ -121,6 +124,7 @@ return <div style={{...sC,border:'1px solid #2a2a20'}}>
 <div>{LBL('UNIDADE')}<select style={sI} value={unid} onChange={e=>setUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
 <div>{LBL('DEVOLVER PARA')}<select style={sI} value={dest} onChange={e=>setDest(e.target.value)}><option value="">Selecione</option><option value="frisa">1° Andar Frisa</option><option value="terceiro">3° Andar</option><option value="central">Estoque Central</option></select></div>
 <div style={{gridColumn:'1/-1'}}>{LBL('OBSERVAÇÃO')}<input style={sI} value={obs} onChange={e=>setObs(e.target.value)}/></div>
+<div>{LBL('DATA (opcional)')}<input type='date' style={sI} value={dataDevol} onChange={e=>setDataDevol(e.target.value)}/></div>
 </div>
 <div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}>
 <button style={sBP} onClick={submit}>↺ Registrar Devolução</button>
