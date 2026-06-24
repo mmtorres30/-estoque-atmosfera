@@ -217,45 +217,6 @@ return <div style={sC}>
 </div>
 }
 
-function UsuarioForm({onAdd}:{onAdd:()=>void}){
-const [username,setUsername]=useState('')
-const [senha,setSenha]=useState('')
-const [nome,setNome]=useState('')
-const [perfil,setPerfil]=useState('central')
-const [msg,setMsg]=useState('')
-const PERFIS=[
-  {value:'central',label:'Estoque Central'},
-  {value:'frisa',label:'1° Andar Frisa'},
-  {value:'terceiro',label:'3° Andar'},
-  {value:'barfrisa',label:'Bar Frisa'},
-  {value:'barboate',label:'Bar Boate'},
-  {value:'barterceiro',label:'Bar 3° Andar'},
-]
-const submit=async()=>{
-  if(!username||!senha||!nome){setMsg('Preencha todos os campos');return}
-  const r=await fetch('/api/usuarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,senha,nome,nome_completo:nome,perfil})})
-  const d=await r.json()
-  if(!r.ok){setMsg(d.error||'Erro ao cadastrar');return}
-  setUsername('');setSenha('');setNome('');setPerfil('central');setMsg('Usuário cadastrado!')
-  onAdd();setTimeout(()=>setMsg(''),2000)
-}
-return <div style={sC}>
-<p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>👤 CADASTRAR NOVO USUÁRIO</p>
-{msg&&<div style={{background:msg.includes('Erro')||msg.includes('Preencha')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')||msg.includes('Preencha')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')||msg.includes('Preencha')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
-<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>NOME COMPLETO</label><input style={sI} value={nome} onChange={e=>setNome(e.target.value)} placeholder="Ex: João Silva"/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>LOGIN (usuário)</label><input style={sI} value={username} onChange={e=>setUsername(e.target.value.toLowerCase().replace(/\s/g,''))} placeholder="Ex: joao.silva"/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>SENHA</label><input type="password" style={sI} value={senha} onChange={e=>setSenha(e.target.value)} placeholder="Mínimo 6 caracteres"/></div>
-<div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>PERFIL DE ACESSO</label>
-<select style={sI} value={perfil} onChange={e=>setPerfil(e.target.value)}>
-{PERFIS.map(p=><option key={p.value} value={p.value}>{p.label}</option>)}
-</select></div>
-</div>
-<div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}>
-<button style={sBP} onClick={submit}>✓ Cadastrar Usuário</button>
-</div>
-</div>
-}
 
 export default function App(){
 const [user,setUser]=useState<any>(null)
