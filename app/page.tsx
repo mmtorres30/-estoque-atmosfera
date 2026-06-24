@@ -143,6 +143,7 @@ return <div style={{...sC,border:'1px solid #2a2a20'}}>
 
 function ProdutoForm({onAdd}:{onAdd:()=>void}){
 const [codProd,setCodProd]=useState('')
+const [nome,setNome]=useState(''),[cat,setCat]=useState(''),[unid,setUnid]=useState('unidade(s)'),[msg,setMsg]=useState('')
 const submit=async()=>{
 if(!nome){setMsg('Digite o nome');return}
 const r=await fetch('/api/produtos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,categoria:cat,unidade_padrao:unid,cod_produto:codProd})})
