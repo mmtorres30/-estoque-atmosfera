@@ -533,7 +533,7 @@ return(
 </div>
 <div style={{flex:1,overflow:'auto'}}>
 <div style={{padding:'24px',maxWidth:1100,margin:'0 auto'}}>
-<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}><p style={{fontSize:11,color:'#4a3a18',letterSpacing:2,textTransform:'uppercase',margin:0}}>{navItems.find(n=>n.id===aba)?.label||'Painel'}</p><button onClick={()=>window.location.reload()} style={{...sB,height:32,padding:'0 14px',fontSize:11,letterSpacing:1}}>🔄 Atualizar</button></div>
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}><p style={{fontSize:11,color:'#4a3a18',letterSpacing:2,textTransform:'uppercase',margin:0}}>{navItems.find(n=>n.id===aba)?.label||'Painel'}</p><button onClick={()=>load()} style={{...sB,height:32,padding:'0 14px',fontSize:11,letterSpacing:1}}>🔄 Atualizar</button></div>
 {renderAba()}
 </div>
 </div>
