@@ -83,3 +83,219 @@ body {
 #rel-table td, #rel-table th {
   color: #e8e0d0 !important;
 }
+
+/* ===== MOBILE MELHORIAS ===== */
+@media (max-width: 768px) {
+  /* Inputs e selects full width */
+  input, select, textarea {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important; /* evita zoom no iOS */
+  }
+
+  /* Grids viram coluna unica */
+  div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tabelas com scroll horizontal */
+  table {
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+  }
+
+  /* Cards do dashboard em coluna */
+  div[style*="repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+  div[style*="repeat(4"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Padding do conteudo principal */
+  div[style*="padding:24px"], div[style*="padding: 24px"] {
+    padding: 12px !important;
+  }
+
+  /* Botoes de acao em linha */
+  div[style*="justifyContent:'flex-end'"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Scanner botao menor */
+  button[title*="Escanear"] {
+    padding: 6px 8px !important;
+  }
+
+  /* Cards de estoque menores */
+  div[style*="borderRadius:12"] {
+    padding: 12px !important;
+  }
+
+  /* Formularios com padding menor */
+  div[style*="padding:'20px 24px'"], div[style*='padding:"20px 24px"'] {
+    padding: 14px !important;
+  }
+
+  /* Texto menor em tabelas */
+  td, th {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* Botoes menores */
+  button {
+    font-size: 12px !important;
+  }
+
+  /* Campos de filtro do relatorio */
+  div[style*="gap:8"] {
+    flex-wrap: wrap !important;
+  }
+}
+
+/* ===== MOBILE MELHORIAS ===== */
+@media (max-width: 768px) {
+  /* Inputs e selects full width */
+  input, select, textarea {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important; /* evita zoom no iOS */
+  }
+
+  /* Grids viram coluna unica */
+  div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tabelas com scroll horizontal */
+  table {
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+  }
+
+  /* Cards do dashboard em coluna */
+  div[style*="repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+  div[style*="repeat(4"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Padding do conteudo principal */
+  div[style*="padding:24px"], div[style*="padding: 24px"] {
+    padding: 12px !important;
+  }
+
+  /* Botoes de acao em linha */
+  div[style*="justifyContent:'flex-end'"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Scanner botao menor */
+  button[title*="Escanear"] {
+    padding: 6px 8px !important;
+  }
+
+  /* Cards de estoque menores */
+  div[style*="borderRadius:12"] {
+    padding: 12px !important;
+  }
+
+  /* Formularios com padding menor */
+  div[style*="padding:'20px 24px'"], div[style*='padding:"20px 24px"'] {
+    padding: 14px !important;
+  }
+
+  /* Texto menor em tabelas */
+  td, th {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* Botoes menores */
+  button {
+    font-size: 12px !important;
+  }
+
+  /* Campos de filtro do relatorio */
+  div[style*="gap:8"] {
+    flex-wrap: wrap !important;
+  }
+}
+
+/* ===== MOBILE MELHORIAS ===== */
+@media (max-width: 768px) {
+  /* Inputs e selects full width */
+  input, select, textarea {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important; /* evita zoom no iOS */
+  }
+
+  /* Grids viram coluna unica */
+  div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tabelas com scroll horizontal */
+  table {
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+  }
+
+  /* Cards do dashboard em coluna */
+  div[style*="repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+  div[style*="repeat(4"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Padding do conteudo principal */
+  div[style*="padding:24px"], div[style*="padding: 24px"] {
+    padding: 12px !important;
+  }
+
+  /* Botoes de acao em linha */
+  div[style*="justifyContent:'flex-end'"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Scanner botao menor */
+  button[title*="Escanear"] {
+    padding: 6px 8px !important;
+  }
+
+  /* Cards de estoque menores */
+  div[style*="borderRadius:12"] {
+    padding: 12px !important;
+  }
+
+  /* Formularios com padding menor */
+  div[style*="padding:'20px 24px'"], div[style*='padding:"20px 24px"'] {
+    padding: 14px !important;
+  }
+
+  /* Texto menor em tabelas */
+  td, th {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* Botoes menores */
+  button {
+    font-size: 12px !important;
+  }
+
+  /* Campos de filtro do relatorio */
+  div[style*="gap:8"] {
+    flex-wrap: wrap !important;
+  }
+}
