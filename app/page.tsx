@@ -521,7 +521,7 @@ return(
 <div className='sidebar-desktop' style={{width:220,minWidth:220,background:'#111',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
 <img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
 </div>
-<div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
+<div style={{flex:1,padding:'12px 8px'}}>
 {navItems.map(n=>(
 <button key={n.id} onClick={()=>setAba(n.id)} style={{width:'100%',display:'flex',alignItems:'center',gap:10,padding:'10px 12px',marginBottom:2,border:'none',borderRadius:8,cursor:'pointer',background:aba===n.id?`linear-gradient(135deg,${G3}33,${G}22)`:'transparent',color:aba===n.id?G2:'#5a4a20',fontWeight:aba===n.id?700:400,fontSize:13,textAlign:'left',borderLeft:aba===n.id?`2px solid ${G}`:'2px solid transparent'}}>
 <span style={{fontSize:16,width:20,textAlign:'center'}}>{n.icon}</span>{n.label}
