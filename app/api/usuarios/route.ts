@@ -23,9 +23,14 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const body = await req.json()
+  const updates: any = { bloqueado: body.bloqueado }
+  if (body.senha) updates.senha = body.senha
+  if (body.nome) updates.nome = body.nome
+  if (body.nome_completo) updates.nome_completo = body.nome_completo
+  if (body.perfil) updates.perfil = body.perfil
   const { data, error } = await supabaseAdmin
     .from('usuarios')
-    .update({ bloqueado: body.bloqueado, senha: body.senha, nome: body.nome, nome_completo: body.nome_completo })
+    .update(updates)
     .eq('id', body.id)
     .select()
     .single()

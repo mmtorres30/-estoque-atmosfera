@@ -431,9 +431,19 @@ if(aba==='usuarios')return <><UsuarioForm onAdd={load}/><div style={sC}>
 <TD v={<span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{u.perfil}</span>}/>
 <TD v={<span style={{background:u.bloqueado?'#1a0808':'#0d2010',color:u.bloqueado?'#f87171':'#4ade80',border:`1px solid ${u.bloqueado?'#5a1010':'#1a5a20'}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{u.bloqueado?'🔒 Bloqueado':'✓ Ativo'}</span>}/>
 <TD v={<button onClick={async()=>{const ns=prompt('Nova senha:');if(ns){const r=await fetch('/api/usuarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id,senha:ns,bloqueado:u.bloqueado,nome:u.nome,nome_completo:u.nome_completo})});if(r.ok){showT('Senha alterada!');load()}else showT('Erro',true)}}} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>🔑 Alterar</button>}/>
-<TD v={<div style={{display:'flex',gap:6}}>
-<button onClick={async()=>{const r=await fetch('/api/usuarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id,bloqueado:!u.bloqueado,senha:u.senha,nome:u.nome,nome_completo:u.nome_completo})});if(r.ok){showT(u.bloqueado?'Usuário desbloqueado!':'Usuário bloqueado!');load()}else showT('Erro',true)}} style={{...sB,height:26,padding:'0 10px',fontSize:11,color:u.bloqueado?'#4ade80':'#f87171',borderColor:u.bloqueado?'#1a5a20':'#5a1010'}}>{u.bloqueado?'🔓 Desbloquear':'🔒 Bloquear'}</button>
-{u.username!=='admin'&&<button onClick={async()=>{if(confirm('Excluir usuário?')){const r=await fetch('/api/usuarios',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id})});if(r.ok){showT('Usuário excluído');load()}else showT('Erro',true)}}} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button>}
+<TD v={<div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+<select value={u.perfil} onChange={async(e)=>{const r=await fetch('/api/usuarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id,perfil:e.target.value,bloqueado:u.bloqueado,senha:u.senha,nome:u.nome,nome_completo:u.nome_completo})});if(r.ok){showT('Perfil atualizado!');load()}else showT('Erro',true)}} style={{...sI,height:28,fontSize:11,width:'auto',padding:'0 8px'}} disabled={u.username==='admin'}>
+<option value="admin">Admin</option>
+<option value="operador">Operador</option>
+<option value="central">Est. Central</option>
+<option value="frisa">1° Frisa</option>
+<option value="terceiro">3° Andar</option>
+<option value="barfrisa">Bar Frisa</option>
+<option value="barboate">Bar Boate</option>
+<option value="barterceiro">Bar 3° Andar</option>
+</select>
+<button onClick={async()=>{const r=await fetch('/api/usuarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id,bloqueado:!u.bloqueado,senha:u.senha,nome:u.nome,nome_completo:u.nome_completo,perfil:u.perfil})});if(r.ok){showT(u.bloqueado?'Desbloqueado!':'Bloqueado!');load()}else showT('Erro',true)}} style={{...sB,height:28,padding:'0 10px',fontSize:11,color:u.bloqueado?'#4ade80':'#f87171',borderColor:u.bloqueado?'#1a5a20':'#5a1010'}}>{u.bloqueado?'🔓':'🔒'}</button>
+{u.username!=='admin'&&<button onClick={async()=>{if(confirm('Excluir usuário?')){const r=await fetch('/api/usuarios',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id})});if(r.ok){showT('Excluído');load()}else showT('Erro',true)}}} style={{...sB,height:28,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button>}
 </div>}/>
 </tr>)}</tbody>
 </table>}
