@@ -14,6 +14,17 @@ const TD=({v,s}:{v:any,s?:any})=><td style={{padding:'9px 12px',color:G2,borderB
 const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#4ade80']:t==='saida'?['#1a1200',G]:['#1a1200','#a0a0a0'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
 const LB=({l}:{l:string})=><span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[l]||l}</span>
 
+
+
+const fmtR=(v:number)=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})
+const maskMoeda=(v:string)=>{
+  const nums=v.replace(/\D/g,'')
+  if(!nums)return ''
+  const n=parseInt(nums)/100
+  return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+}
+const unMaskMoeda=(v:string)=>parseFloat(v.replace(/\./g,'').replace(',','.'))||0
+
 function EntradaForm({dest,emps,prods,onReg}:{dest:string,emps:any[],prods:any[],onReg:(t:string,d:any)=>Promise<boolean>}){
 const [empresa,setEmpresa]=useState('')
 const [nf,setNf]=useState('')
