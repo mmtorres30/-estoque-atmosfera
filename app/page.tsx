@@ -524,24 +524,18 @@ return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rows.length} r
 <td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:r.atual?'#1a3a1a':'#2a2a2a',color:r.atual?'#4aaa4a':'#888',padding:'2px 8px',borderRadius:4,fontSize:10}}>{r.atual?'No estoque':'Saiu'}</span></td>
 </tr>)}</tbody>
 </table></div></>})()}
-{rAbaRel==='movimentos'&&<div style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:16}}>
-<input value={rDe} onChange={e=>setRDe(e.target.value)} type="date" style={{...sI,height:34,fontSize:11,width:140}} placeholder="Data início"/>
-<input value={rAte} onChange={e=>setRAte(e.target.value)} type="date" style={{...sI,height:34,fontSize:11,width:140}} placeholder="Data fim"/>
-<select value={rLocal} onChange={e=>setRLocal(e.target.value)} style={{...sI,height:34,fontSize:11}}>
-<option value="">Todos os locais</option>
-{Object.entries(LOC).map(([k,v])=><option key={k} value={k}>{v as string}</option>)}
-</select>
-<input value={rProd} onChange={e=>setRProd(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Produto..."/>
-<input value={rEmp} onChange={e=>setREmp(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Empresa..."/>
-<input value={rUser} onChange={e=>setRUser(e.target.value)} style={{...sI,height:34,fontSize:11,width:140}} placeholder="Usuário/Responsável..."/>
-<select value={rTipo} onChange={e=>setRTipo(e.target.value)} style={{...sI,height:34,fontSize:11}}>
-<option value="">Todos os tipos</option>
-<option value="entrada">Entrada</option>
-<option value="saida">Saída</option>
-<option value="transferencia">Transferência</option>
-<option value="devolucao">Devolução</option>
-</select>
-<button onClick={()=>{setRDe('');setRAte('');setRLocal('');setRProd('');setREmp('');setRUser('');setRTipo('')}} style={{...sB,height:34,padding:'0 12px',fontSize:11,background:'transparent',borderColor:'#555',color:'#888'}}>Limpar</button>
+{rAbaRel==='movimentos'&&<div style={{marginBottom:16}}>
+<div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:8}}>
+<input value={rDe} onChange={e=>setRDe(e.target.value)} type="date" style={{...sI,height:36,fontSize:11,width:150}}/>
+<input value={rAte} onChange={e=>setRAte(e.target.value)} type="date" style={{...sI,height:36,fontSize:11,width:150}}/>
+<select value={rLocal} onChange={e=>setRLocal(e.target.value)} style={{...sI,height:36,fontSize:11,width:180}}><option value="">Todos os locais</option>{Object.entries(LOC).map(([k,v])=><option key={k} value={k}>{v as string}</option>)}</select>
+<select value={rTipo} onChange={e=>setRTipo(e.target.value)} style={{...sI,height:36,fontSize:11,width:160}}><option value="">Todos os tipos</option><option value="entrada">Entrada</option><option value="saida">Saída</option><option value="transferencia">Transferência</option><option value="devolucao">Devolução</option></select>
+</div>
+<div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:8}}>
+<input value={rProd} onChange={e=>setRProd(e.target.value)} style={{...sI,height:36,fontSize:11,width:160}} placeholder="🔍 Produto..."/>
+<input value={rEmp} onChange={e=>setREmp(e.target.value)} style={{...sI,height:36,fontSize:11,width:160}} placeholder="🏢 Empresa..."/>
+<input value={rUser} onChange={e=>setRUser(e.target.value)} style={{...sI,height:36,fontSize:11,width:180}} placeholder="👤 Usuário/Responsável..."/>
+<button onClick={()=>{setRDe('');setRAte('');setRLocal('');setRProd('');setREmp('');setRUser('');setRTipo('')}} style={{...sB,height:36,padding:'0 16px',fontSize:11,background:'transparent',borderColor:`${G}44`,color:G}}>✕ Limpar</button>
 </div>}
 {(()=>{const rFil=movs.filter(m=>{
 let ok=true;
