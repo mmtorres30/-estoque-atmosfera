@@ -497,7 +497,7 @@ if(aba==='historico')return <>
 </>}
 if(!user)return(
 <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#1a1200 0%,${BG} 70%)`}}>
-<div style={{width:420,padding:'44px 40px',background:`linear-gradient(160deg,${BG3},${BG2})`,border:`1px solid ${BOR}`,borderRadius:16,boxShadow:'0 0 80px #C9A84C10'}}>
+<div style={{width:'min(420px,92vw)',padding:'clamp(24px,6vw,44px) clamp(20px,6vw,40px)',background:`linear-gradient(160deg,${BG3},${BG2})`,border:`1px solid ${BOR}`,borderRadius:16,boxShadow:'0 0 80px #C9A84C10'}}>
 <div style={{textAlign:'center',marginBottom:36}}>
 <img src="/logo.png" alt="Camarote Atmosfera" style={{width:220,display:'block',margin:'0 auto 12px'}}/>
 <div style={{width:80,height:1,background:`linear-gradient(90deg,transparent,${G},transparent)`,margin:'0 auto 14px'}}/>
