@@ -189,7 +189,12 @@ const totLoc=(loc:string)=>ests.filter(e=>e.local===loc).reduce((a,e)=>a+e.quant
 const reg=async(tipo:string,dados:any)=>{
 if(!dados.produto||!dados.quantidade){showT('Preencha produto e quantidade',true);return false}
 const r=await fetch('/api/movimentos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo,...dados})})
-const d=await r.json();if(!r.ok){showT(d.error||'Erro',true);return false}
+const d=await r.json()
+if(!r.ok){
+  const msg=d.error||'Erro ao registrar'
+  showT(msg,true)
+  return false
+}
 showT('Registrado com sucesso!');load();return true
 }
 const delEmp=async(id:string)=>{await fetch('/api/empresas',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});showT('Removida');load()}

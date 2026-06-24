@@ -22,10 +22,17 @@ export async function POST(req: NextRequest) {
       .eq('local', origem)
       .eq('produto', produto)
       .single()
-    if (!orig || orig.quantidade < quantidade)
-      return NextResponse.json({ error: 'Estoque insuficiente' }, { status: 400 })
+
+    const disponivelAtual = orig?.quantidade || 0
+
+    if (disponivelAtual < quantidade) {
+      return NextResponse.json({
+        error: `Estoque insuficiente! "${produto}" tem apenas ${disponivelAtual} unidade(s) em ${origem === 'central' ? 'Estoque Central' : origem === 'frisa' ? '1° Andar Frisa' : origem === 'terceiro' ? '3° Andar' : origem}. Você tentou retirar ${quantidade}.`
+      }, { status: 400 })
+    }
+
     await supabaseAdmin.from('estoques')
-      .upsert({ local: origem, produto, quantidade: orig.quantidade - quantidade }, { onConflict: 'local,produto' })
+      .upsert({ local: origem, produto, quantidade: disponivelAtual - quantidade }, { onConflict: 'local,produto' })
   }
 
   const { data: dest } = await supabaseAdmin
@@ -34,6 +41,7 @@ export async function POST(req: NextRequest) {
     .eq('local', destino)
     .eq('produto', produto)
     .single()
+
   const qtdAtual = dest?.quantidade || 0
   await supabaseAdmin.from('estoques')
     .upsert({ local: destino, produto, quantidade: qtdAtual + quantidade }, { onConflict: 'local,produto' })
