@@ -126,7 +126,7 @@ export default function Scanner({ onScan }: ScannerProps) {
           whiteSpace: 'nowrap',
         }}
       >
-        [CAM]
+        📷
       </button>
 
       {open && (
