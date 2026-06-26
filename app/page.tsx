@@ -419,26 +419,7 @@ if(aba==='dashboard'){
         })}
       </div>
     </div>}
-    {alertas.length>0&&<div style={{background:'#1a0808',border:'1px solid #8a1a1a',borderRadius:10,padding:'14px 18px',marginBottom:20}}>
-      <p style={{color:'#fca5a5',fontWeight:700,fontSize:12,letterSpacing:1,marginBottom:10}}>ALERTA DE ESTOQUE BAIXO ({alertas.length} {alertas.length===1?'item':'itens'})</p>
-      <div style={{display:'flex',flexDirection:'column',gap:6}}>
-        {alertas.map((e,i)=>{
-          const lim=LIMITES[e.local]||10
-          const pct=Math.round((e.quantidade/lim)*100)
-          return <div key={i} style={{display:'flex',alignItems:'center',gap:10,background:'#2a0a0a',borderRadius:6,padding:'8px 12px'}}>
-            <div style={{width:8,height:8,borderRadius:'50%',background:e.quantidade<=Math.floor(lim/2)?'#ef4444':'#f97316',flexShrink:0}}/>
-            <div style={{flex:1,fontSize:12,color:'#fca5a5'}}><strong>{e.produto}</strong></div>
-            <div style={{fontSize:11,color:'#888'}}>{LOC[e.local]||e.local}</div>
-            <div style={{fontSize:12,fontWeight:700,color:e.quantidade<=Math.floor(lim/2)?'#ef4444':'#f97316'}}>{e.quantidade} un.</div>
-            <div style={{fontSize:10,color:'#666'}}>min: {lim}</div>
-            <div style={{width:60,height:4,background:'#3a1a1a',borderRadius:2,overflow:'hidden'}}>
-              <div style={{width:`${Math.min(pct,100)}%`,height:'100%',background:e.quantidade<=Math.floor(lim/2)?'#ef4444':'#f97316'}}/>
-            </div>
-          </div>
-        })}
-      </div>
-    </div>}
-    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:20}}>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12,marginBottom:20}}>
       <div style={{background:'linear-gradient(135deg,#1c1608,#2a1e08)',border:'1px solid #3a3010',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#8a7040',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Total em estoque</div>
         <div style={{fontSize:38,fontWeight:700,color:G2,letterSpacing:-1}}>{totalGeral.toLocaleString('pt-BR')}</div>
@@ -460,7 +441,7 @@ if(aba==='dashboard'){
         <div style={{fontSize:11,color:'#404080',marginTop:4}}>tipos de produto</div>
       </div>
     </div>
-    <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12,marginBottom:20}}>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
       {locais.map(l=>{
         const tot=totLoc(l.key)
         const items=Object.entries(estLoc(l.key)).filter(([,v])=>v>0)
@@ -487,7 +468,7 @@ if(aba==='dashboard'){
         </div>
       })}
     </div>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:16}}>
       <div style={sC}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
           <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>ÚLTIMAS MOVIMENTAÇÕES</p>
