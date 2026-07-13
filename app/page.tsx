@@ -417,6 +417,9 @@ if(aba==='dashboard'){
   const totalGeral=Object.keys(LOC).filter(k=>k!=='empresa').reduce((a,k)=>a+totLoc(k),0)
   const entHoje=movs.filter(m=>m.tipo==='entrada'&&new Date(m.data).toDateString()===new Date().toDateString()).length
   const saiHoje=movs.filter(m=>m.tipo==='saida'&&new Date(m.data).toDateString()===new Date().toDateString()).length
+  const vendasHoje=movs.filter(m=>m.tipo==='venda'&&new Date(m.data).toDateString()===new Date().toDateString())
+  const qtdVendasHoje=vendasHoje.length
+  const fatHoje=vendasHoje.reduce((a,m)=>a+(m.valor_total||0),0)
   const allItems=ests.filter(e=>e.quantidade>0)
   const produtosUnicos=[...new Set(allItems.map(e=>e.produto))]
   const locais=[
@@ -477,6 +480,16 @@ if(aba==='dashboard'){
         <div style={{fontSize:10,color:'#5050a0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Produtos ativos</div>
         <div style={{fontSize:38,fontWeight:700,color:'#a0a0ff',letterSpacing:-1}}>{produtosUnicos.length}</div>
         <div style={{fontSize:11,color:'#404080',marginTop:4}}>tipos de produto</div>
+      </div>
+      <div style={{background:'linear-gradient(135deg,#1a0a2a,#150820)',border:'1px solid #3a2050',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#9060c0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Vendas hoje</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#c084fc',letterSpacing:-1}}>{qtdVendasHoje}</div>
+        <div style={{fontSize:11,color:'#7040a0',marginTop:4}}>registros de venda</div>
+      </div>
+      <div style={{background:'linear-gradient(135deg,#1a0a2a,#150820)',border:'1px solid #3a2050',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#9060c0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Faturamento hoje</div>
+        <div style={{fontSize:32,fontWeight:700,color:'#c084fc',letterSpacing:-1}}>{fmtR(fatHoje)}</div>
+        <div style={{fontSize:11,color:'#7040a0',marginTop:4}}>vendido nos bares hoje</div>
       </div>
     </div>
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
