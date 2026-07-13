@@ -560,6 +560,42 @@ if(aba==='dashboard'){
         </div>}
       </div>
     </div>
+    <div style={sC}>
+      <p style={{fontSize:11,fontWeight:700,color:'#c084fc',letterSpacing:1.5,marginBottom:14}}>🛒 VENDAS POR BAR</p>
+      {(()=>{
+        const vendas=movs.filter(m=>m.tipo==='venda')
+        const bares=['barfrisa','barboate','barterceiro']
+        if(vendas.length===0)return <p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma venda registrada ainda</p>
+        const blocos=bares.map(b=>{
+          const vb=vendas.filter(m=>m.origem===b)
+          if(vb.length===0)return null
+          const porProduto:Record<string,{qtd:number,valor:number}>={}
+          vb.forEach(m=>{
+            if(!porProduto[m.produto])porProduto[m.produto]={qtd:0,valor:0}
+            porProduto[m.produto].qtd+=m.quantidade
+            porProduto[m.produto].valor+=(m.valor_total||0)
+          })
+          const totalBar=vb.reduce((a,m)=>a+(m.valor_total||0),0)
+          const itens=Object.entries(porProduto).sort((a,b)=>b[1].valor-a[1].valor)
+          return <div key={b} style={{background:BG3,border:'1px solid #3a2050',borderRadius:12,padding:'16px 18px'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+              <div style={{fontSize:12,fontWeight:700,color:'#c084fc'}}>{LOC[b]||b}</div>
+              <div style={{fontSize:13,fontWeight:700,color:'#c084fc'}}>{fmtR(totalBar)}</div>
+            </div>
+            <div style={{borderTop:'1px solid #2a1a3a',paddingTop:8}}>
+              {itens.map(([p,v])=>(
+                <div key={p} style={{display:'grid',gridTemplateColumns:'1fr auto auto',gap:10,padding:'4px 0',alignItems:'center'}}>
+                  <span style={{fontSize:11,color:'#c0a0e0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p}</span>
+                  <span style={{fontSize:11,color:'#9060c0',textAlign:'right' as any}}>{v.qtd} un.</span>
+                  <span style={{fontSize:11,fontWeight:600,color:'#c084fc',textAlign:'right' as any,minWidth:70}}>{fmtR(v.valor)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        }).filter(Boolean)
+        return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:16}}>{blocos}</div>
+      })()}
+    </div>
   </>
 }
 if(aba==='entrada-central')return <>{canEdit('central')&&<EntradaForm dest="central" emps={emps} prods={prods} onReg={reg}/>}<div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — ESTOQUE CENTRAL</p><button style={sBP} onClick={()=>exportarExcel('central')}>📊 Exportar Excel</button></div><TblEst loc="central"/></div></>
