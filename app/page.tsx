@@ -488,7 +488,7 @@ if(aba==='dashboard'){
       </div>
       <div style={{background:'linear-gradient(135deg,#211530,#180F26)',border:'1px solid #4A2E6E',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#A98BD0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Faturamento hoje</div>
-        <div style={{fontSize:32,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#C77DFF',letterSpacing:-1}}>{fmtR(fatHoje)}</div>
+        <div style={{fontSize:23,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#C77DFF',letterSpacing:0,whiteSpace:'nowrap'}}>{fmtR(fatHoje)}</div>
         <div style={{fontSize:11,color:'#8A64B0',marginTop:4}}>vendido nos bares hoje</div>
       </div>
     </div>
@@ -552,7 +552,7 @@ if(aba==='dashboard'){
             <tbody>{allItems.sort((a,b)=>b.quantidade-a.quantidade).slice(0,showAllInv?10000:10).map((e,i)=>(
               <tr key={i}>
                 <TD v={e.produto} s={{fontSize:12}}/>
-                <TD v={<span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'1px 8px',fontSize:10,whiteSpace:'nowrap'}}>{LOC[e.local]||e.local}</span>}/>
+                <TD v={<span style={{background:'#F7EFDD',color:'#8B6C2E',border:'1px solid #E3CFA0',borderRadius:20,padding:'1px 8px',fontSize:10,whiteSpace:'nowrap',fontWeight:600}}>{LOC[e.local]||e.local}</span>}/>
                 <TD v={<strong style={{color:G2}}>{e.quantidade}</strong>}/>
               </tr>
             ))}</tbody>
