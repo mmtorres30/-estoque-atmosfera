@@ -4,16 +4,16 @@ import * as XLSX from 'xlsx'
 import Scanner from './components/Scanner'
 const LOC:Record<string,string>={central:'Estoque Central',frisa:'Estoque 1° Andar',terceiro:'Estoque 3° Andar',barfrisa:'Bar Frisa',barboate:'Bar Boate',barterceiro:'Bar 3° Andar',empresa:'Fornecedora'}
 const UNIDS=['unidade(s)','caixa(s)','fardo(s)','barril(is)','garrafa(s)','lata(s)']
-const G='#C9A84C',G2='#F0D080',G3='#8B6914',BG='#0a0800',BG2='#110e02',BG3='#1a1608',BOR='#2e2810'
-const sI:any={width:'100%',height:38,border:`1px solid #2e2810`,borderRadius:6,padding:'0 12px',fontSize:13,background:'#110e02',color:'#F0D080',outline:'none',boxSizing:'border-box' as any}
-const sC:any={background:'#1a1608',borderRadius:10,border:'1px solid #2e2810',padding:'20px 24px',marginBottom:16}
-const sB:any={height:36,padding:'0 18px',borderRadius:6,border:'1px solid #3a3010',cursor:'pointer',fontSize:12,fontWeight:600,background:'#110e02',color:'#C9A84C',letterSpacing:1}
-const sBP:any={height:36,padding:'0 18px',borderRadius:6,cursor:'pointer',fontSize:12,fontWeight:600,background:'linear-gradient(135deg,#8B6914,#C9A84C)',color:'#0a0800',border:'none',letterSpacing:1}
+const G='#D8B36B',G2='#F5EEDD',G3='#9C8FB0',BG='#0D0A12',BG2='#171220',BG3='#1C1626',BOR='#3A2F4D'
+const sI:any={width:'100%',height:38,border:`1px solid #3A2F4D`,borderRadius:6,padding:'0 12px',fontSize:13,background:'#171220',color:'#F5EEDD',outline:'none',boxSizing:'border-box' as any}
+const sC:any={background:'#1C1626',borderRadius:10,border:'1px solid #3A2F4D',padding:'20px 24px',marginBottom:16}
+const sB:any={height:36,padding:'0 18px',borderRadius:6,border:'1px solid #46394F',cursor:'pointer',fontSize:12,fontWeight:600,background:'#171220',color:'#D8B36B',letterSpacing:1}
+const sBP:any={height:36,padding:'0 18px',borderRadius:6,cursor:'pointer',fontSize:12,fontWeight:600,background:'linear-gradient(135deg,#9A7A3E,#D8B36B)',color:'#0D0A12',border:'none',letterSpacing:1}
 const LBL=(t:string)=><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>{t}</label>
 const TH=(h:string,i:number)=><th key={i} style={{textAlign:'left',padding:'8px 12px',fontSize:10,color:G,borderBottom:`1px solid ${BOR}`,textTransform:'uppercase' as any,letterSpacing:1.2}}>{h}</th>
 const TD=({v,s}:{v:any,s?:any})=><td style={{padding:'9px 12px',color:G2,borderBottom:'1px solid #1a1600',fontSize:13,...s}}>{v}</td>
-const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#4ade80']:t==='saida'?['#1a1200',G]:t==='venda'?['#1a0a2a','#c084fc']:['#1a1200','#a0a0a0'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
-const LB=({l}:{l:string})=><span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[l]||l}</span>
+const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#5EEAA0']:t==='saida'?['#241A0E',G]:t==='venda'?['#21152f','#C77DFF']:['#1a1622','#B4A8C4'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
+const LB=({l}:{l:string})=><span style={{background:'#1C1626',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[l]||l}</span>
 
 
 
@@ -97,7 +97,7 @@ setCod('');setProd('');setQty('');setUnid('unidade(s)');setDest('');setResp('');
 }
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>↑ REGISTRAR SAÍDA</p>
-{erroSaida&&<div style={{background:'#1a0808',border:'1px solid #5a1010',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#fca5a5',marginBottom:14,display:'flex',alignItems:'center',gap:8}}><span style={{fontSize:16}}>⚠️</span>{erroSaida}</div>}
+{erroSaida&&<div style={{background:'#210A0E',border:'1px solid #6B2430',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#FF9B95',marginBottom:14,display:'flex',alignItems:'center',gap:8}}><span style={{fontSize:16}}>⚠️</span>{erroSaida}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
 <div style={{gridColumn:'1/-1'}}>{LBL('CÓDIGO')}
 <div style={{display:'flex',gap:8,alignItems:'center'}}>
@@ -163,7 +163,7 @@ setProd('');setQty('');setUnid('unidade(s)');setVUnit('');setVTot('');setObs('')
 }
 return <div style={{...sC,border:'1px solid #2a2a20'}}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>🛒 REGISTRAR VENDA</p>
-{erroVenda&&<div style={{background:'#1a0808',border:'1px solid #5a1010',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#fca5a5',marginBottom:14,display:'flex',alignItems:'center',gap:8}}><span style={{fontSize:16}}>⚠️</span>{erroVenda}</div>}
+{erroVenda&&<div style={{background:'#210A0E',border:'1px solid #6B2430',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#FF9B95',marginBottom:14,display:'flex',alignItems:'center',gap:8}}><span style={{fontSize:16}}>⚠️</span>{erroVenda}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
 <div>{LBL('PRODUTO')}<select style={sI} value={prod} onChange={e=>setProd(e.target.value)}><option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}</select></div>
 <div>{LBL('QUANTIDADE')}<input style={sI} value={qty} onChange={e=>{setQty(e.target.value);calcTot(e.target.value,vUnit)}} placeholder="Ex: 2"/></div>
@@ -191,7 +191,7 @@ setTimeout(()=>setMsg(''),2000)
 }
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>▤ CADASTRAR NOVO PRODUTO</p>
-{msg&&<div style={{background:msg.includes('Erro')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
+{msg&&<div style={{background:msg.includes('Erro')?'#210A0E':'#0A1F14',border:`1px solid ${msg.includes('Erro')?'#6B2430':'#1E4B30'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')?'#FF9B95':'#5EEAA0',marginBottom:12}}>{msg}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
 <div style={{gridColumn:'1/-1'}}>{LBL('CODIGO DO PRODUTO')}
 <div style={{display:'flex',gap:8,alignItems:'center'}}>
@@ -219,7 +219,7 @@ setTimeout(()=>setMsg(''),2000)
 }
 return <div style={sC}>
 <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>CADASTRAR EMPRESA</p>
-{msg&&<div style={{background:msg.includes('Erro')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
+{msg&&<div style={{background:msg.includes('Erro')?'#210A0E':'#0A1F14',border:`1px solid ${msg.includes('Erro')?'#6B2430':'#1E4B30'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')?'#FF9B95':'#5EEAA0',marginBottom:12}}>{msg}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
 <div>{LBL('CÓDIGO')}<input style={sI} value={cod} onChange={e=>setCod(e.target.value)} placeholder="Ex: AGU-500"/></div>
 <div>{LBL('CNPJ/CPF')}<input style={sI} value={doc} onChange={e=>{
@@ -266,7 +266,7 @@ const submit=async()=>{
 }
 return <div style={sC}>
 <p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>👤 CADASTRAR NOVO USUÁRIO</p>
-{msg&&<div style={{background:msg.includes('Erro')||msg.includes('Preencha')?'#1a0808':'#0d2010',border:`1px solid ${msg.includes('Erro')||msg.includes('Preencha')?'#5a1010':'#1a5a20'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')||msg.includes('Preencha')?'#f87171':'#4ade80',marginBottom:12}}>{msg}</div>}
+{msg&&<div style={{background:msg.includes('Erro')||msg.includes('Preencha')?'#210A0E':'#0A1F14',border:`1px solid ${msg.includes('Erro')||msg.includes('Preencha')?'#6B2430':'#1E4B30'}`,borderRadius:6,padding:'8px 12px',fontSize:12,color:msg.includes('Erro')||msg.includes('Preencha')?'#FF9B95':'#5EEAA0',marginBottom:12}}>{msg}</div>}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
 <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>NOME COMPLETO</label><input style={sI} value={nome} onChange={e=>setNome(e.target.value)} placeholder="Ex: João Silva"/></div>
 <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>LOGIN (usuário)</label><input style={sI} value={username} onChange={e=>setUsername(e.target.value.toLowerCase().replace(/\s/g,''))} placeholder="Ex: joao.silva"/></div>
@@ -461,35 +461,35 @@ if(aba==='dashboard'){
       </div>
     </div>}
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12,marginBottom:20}}>
-      <div style={{background:'linear-gradient(135deg,#1c1608,#2a1e08)',border:'1px solid #3a3010',borderRadius:12,padding:'20px 18px'}}>
-        <div style={{fontSize:10,color:'#8a7040',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Total em estoque</div>
+      <div style={{background:'linear-gradient(135deg,#241A0E,#332512)',border:'1px solid #46341A',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#B49A6A',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Total em estoque</div>
         <div style={{fontSize:38,fontWeight:700,color:G2,letterSpacing:-1}}>{totalGeral.toLocaleString('pt-BR')}</div>
-        <div style={{fontSize:11,color:'#6a5a30',marginTop:4}}>unidades — todos os locais</div>
+        <div style={{fontSize:11,color:'#8A7550',marginTop:4}}>unidades — todos os locais</div>
       </div>
-      <div style={{background:'linear-gradient(135deg,#0d1a0d,#0a150a)',border:'1px solid #1a3010',borderRadius:12,padding:'20px 18px'}}>
-        <div style={{fontSize:10,color:'#4a7040',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Entradas hoje</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#4ade80',letterSpacing:-1}}>{entHoje}</div>
-        <div style={{fontSize:11,color:'#3a5030',marginTop:4}}>registros de entrada</div>
+      <div style={{background:'linear-gradient(135deg,#0D1F14,#0A170F)',border:'1px solid #1E3B26',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#4F9468',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Entradas hoje</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#5EEAA0',letterSpacing:-1}}>{entHoje}</div>
+        <div style={{fontSize:11,color:'#3A6B4A',marginTop:4}}>registros de entrada</div>
       </div>
-      <div style={{background:'linear-gradient(135deg,#1a1200,#150e00)',border:'1px solid #3a2800',borderRadius:12,padding:'20px 18px'}}>
-        <div style={{fontSize:10,color:'#8a6020',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Saídas hoje</div>
+      <div style={{background:'linear-gradient(135deg,#241A0E,#1C140A)',border:'1px solid #46341A',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#B49A6A',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Saídas hoje</div>
         <div style={{fontSize:38,fontWeight:700,color:G,letterSpacing:-1}}>{saiHoje}</div>
-        <div style={{fontSize:11,color:'#6a4a20',marginTop:4}}>registros de saída</div>
+        <div style={{fontSize:11,color:'#8A7550',marginTop:4}}>registros de saída</div>
       </div>
-      <div style={{background:'linear-gradient(135deg,#0d0d1a,#080810)',border:'1px solid #20203a',borderRadius:12,padding:'20px 18px'}}>
-        <div style={{fontSize:10,color:'#5050a0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Produtos ativos</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#a0a0ff',letterSpacing:-1}}>{produtosUnicos.length}</div>
-        <div style={{fontSize:11,color:'#404080',marginTop:4}}>tipos de produto</div>
+      <div style={{background:'linear-gradient(135deg,#171128,#100C1D)',border:'1px solid #34285A',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#8478B8',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Produtos ativos</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#A79AF0',letterSpacing:-1}}>{produtosUnicos.length}</div>
+        <div style={{fontSize:11,color:'#5C5290',marginTop:4}}>tipos de produto</div>
       </div>
-      <div style={{background:'linear-gradient(135deg,#1a0a2a,#150820)',border:'1px solid #3a2050',borderRadius:12,padding:'20px 18px'}}>
-        <div style={{fontSize:10,color:'#9060c0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Vendas hoje</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#c084fc',letterSpacing:-1}}>{qtdVendasHoje}</div>
-        <div style={{fontSize:11,color:'#7040a0',marginTop:4}}>registros de venda</div>
+      <div style={{background:'linear-gradient(135deg,#211530,#180F26)',border:'1px solid #4A2E6E',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#A98BD0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Vendas hoje</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#C77DFF',letterSpacing:-1}}>{qtdVendasHoje}</div>
+        <div style={{fontSize:11,color:'#8A64B0',marginTop:4}}>registros de venda</div>
       </div>
-      <div style={{background:'linear-gradient(135deg,#1a0a2a,#150820)',border:'1px solid #3a2050',borderRadius:12,padding:'20px 18px'}}>
-        <div style={{fontSize:10,color:'#9060c0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Faturamento hoje</div>
-        <div style={{fontSize:32,fontWeight:700,color:'#c084fc',letterSpacing:-1}}>{fmtR(fatHoje)}</div>
-        <div style={{fontSize:11,color:'#7040a0',marginTop:4}}>vendido nos bares hoje</div>
+      <div style={{background:'linear-gradient(135deg,#211530,#180F26)',border:'1px solid #4A2E6E',borderRadius:12,padding:'20px 18px'}}>
+        <div style={{fontSize:10,color:'#A98BD0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Faturamento hoje</div>
+        <div style={{fontSize:32,fontWeight:700,color:'#C77DFF',letterSpacing:-1}}>{fmtR(fatHoje)}</div>
+        <div style={{fontSize:11,color:'#8A64B0',marginTop:4}}>vendido nos bares hoje</div>
       </div>
     </div>
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
@@ -528,13 +528,13 @@ if(aba==='dashboard'){
         {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
         <div style={{overflowX:'auto'}}>{movs.slice(0,showAllMovs?1000:10).map(m=>(
           <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #1a1600'}}>
-            <div style={{width:8,height:8,borderRadius:'50%',background:m.tipo==='entrada'?'#4ade80':m.tipo==='saida'?G:m.tipo==='venda'?'#c084fc':'#a0a0a0',flexShrink:0}}/>
+            <div style={{width:8,height:8,borderRadius:'50%',background:m.tipo==='entrada'?'#5EEAA0':m.tipo==='saida'?G:m.tipo==='venda'?'#C77DFF':'#B4A8C4',flexShrink:0}}/>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:12,color:G2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.produto}</div>
               <div style={{fontSize:10,color:'#5a4a20',marginTop:1}}>{LOC[m.origem]||m.origem} → {LOC[m.destino]||m.destino}</div>
             </div>
             <div style={{textAlign:'right',flexShrink:0}}>
-              <div style={{fontSize:12,fontWeight:700,color:m.tipo==='entrada'?'#4ade80':G}}>{m.tipo==='entrada'?'+':'-'}{m.quantidade} {m.unidade}</div>
+              <div style={{fontSize:12,fontWeight:700,color:m.tipo==='entrada'?'#5EEAA0':G}}>{m.tipo==='entrada'?'+':'-'}{m.quantidade} {m.unidade}</div>
               <div style={{fontSize:10,color:'#5a4a20'}}>{fdt(m.data)}</div>
             </div>
           </div>
@@ -561,7 +561,7 @@ if(aba==='dashboard'){
       </div>
     </div>
     <div style={sC}>
-      <p style={{fontSize:11,fontWeight:700,color:'#c084fc',letterSpacing:1.5,marginBottom:14}}>🛒 VENDAS POR BAR</p>
+      <p style={{fontSize:11,fontWeight:700,color:'#C77DFF',letterSpacing:1.5,marginBottom:14}}>🛒 VENDAS POR BAR</p>
       {(()=>{
         const vendas=movs.filter(m=>m.tipo==='venda')
         const bares=['barfrisa','barboate','barterceiro']
@@ -577,17 +577,17 @@ if(aba==='dashboard'){
           })
           const totalBar=vb.reduce((a,m)=>a+(m.valor_total||0),0)
           const itens=Object.entries(porProduto).sort((a,b)=>b[1].valor-a[1].valor)
-          return <div key={b} style={{background:BG3,border:'1px solid #3a2050',borderRadius:12,padding:'16px 18px'}}>
+          return <div key={b} style={{background:BG3,border:'1px solid #4A2E6E',borderRadius:12,padding:'16px 18px'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-              <div style={{fontSize:12,fontWeight:700,color:'#c084fc'}}>{LOC[b]||b}</div>
-              <div style={{fontSize:13,fontWeight:700,color:'#c084fc'}}>{fmtR(totalBar)}</div>
+              <div style={{fontSize:12,fontWeight:700,color:'#C77DFF'}}>{LOC[b]||b}</div>
+              <div style={{fontSize:13,fontWeight:700,color:'#C77DFF'}}>{fmtR(totalBar)}</div>
             </div>
-            <div style={{borderTop:'1px solid #2a1a3a',paddingTop:8}}>
+            <div style={{borderTop:'1px solid #34204A',paddingTop:8}}>
               {itens.map(([p,v])=>(
                 <div key={p} style={{display:'grid',gridTemplateColumns:'1fr auto auto',gap:10,padding:'4px 0',alignItems:'center'}}>
-                  <span style={{fontSize:11,color:'#c0a0e0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p}</span>
-                  <span style={{fontSize:11,color:'#9060c0',textAlign:'right' as any}}>{v.qtd} un.</span>
-                  <span style={{fontSize:11,fontWeight:600,color:'#c084fc',textAlign:'right' as any,minWidth:70}}>{fmtR(v.valor)}</span>
+                  <span style={{fontSize:11,color:'#C7B3E0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p}</span>
+                  <span style={{fontSize:11,color:'#8A64B0',textAlign:'right' as any}}>{v.qtd} un.</span>
+                  <span style={{fontSize:11,fontWeight:600,color:'#C77DFF',textAlign:'right' as any,minWidth:70}}>{fmtR(v.valor)}</span>
                 </div>
               ))}
             </div>
@@ -727,7 +727,7 @@ return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rFil.length} m
 <thead><tr>{['Data','Tipo','Produto','Qtd','Unid','Origem','Destino','NF','Responsável','Usuário','Obs'].map(h=><th key={h} style={{fontSize:10,color:G,letterSpacing:1,padding:'8px 10px',borderBottom:`1px solid ${BOR}`,textAlign:'left',whiteSpace:'nowrap'}}>{h}</th>)}</tr></thead>
 <tbody>{rFil.length===0?<tr><td colSpan={11} style={{textAlign:'center',padding:24,color:'#5a4a20',fontSize:13}}>Nenhuma movimentação encontrada</td></tr>:rFil.map(m=><tr key={m.id} style={{borderBottom:`1px solid ${BOR}22`}}>
 <td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap',color:'#e8e0d0'}}>{fdt(m.data)}</td>
-<td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:m.tipo==='entrada'?'#1a3a1a':m.tipo==='saida'?'#3a1a1a':m.tipo==='transferencia'?'#1a1a3a':m.tipo==='venda'?'#2a1a3a':'#2a2a1a',color:m.tipo==='entrada'?'#4aaa4a':m.tipo==='saida'?'#aa4a4a':m.tipo==='transferencia'?'#4a4aaa':m.tipo==='venda'?'#c084fc':'#aaaa4a',padding:'2px 8px',borderRadius:4,fontSize:10,whiteSpace:'nowrap'}}>{m.tipo}</span></td>
+<td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:m.tipo==='entrada'?'#1a3a1a':m.tipo==='saida'?'#3a1a1a':m.tipo==='transferencia'?'#1a1a3a':m.tipo==='venda'?'#34204A':'#241C10',color:m.tipo==='entrada'?'#4aaa4a':m.tipo==='saida'?'#aa4a4a':m.tipo==='transferencia'?'#4a4aaa':m.tipo==='venda'?'#C77DFF':'#B4A8C4',padding:'2px 8px',borderRadius:4,fontSize:10,whiteSpace:'nowrap'}}>{m.tipo}</span></td>
 <td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.produto}</td>
 <td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.quantidade}</td>
 <td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.unidade}</td>
@@ -784,7 +784,7 @@ if(aba==='historico')return <>
 <div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs',''].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/><TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>setEditMov(m)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>delMov(m.id)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button></div>}/></tr>)}</tbody></table></div>}</div>
 </>}
 if(!user)return(
-<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#1a1200 0%,${BG} 70%)`}}>
+<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#241A0E 0%,${BG} 70%)`}}>
 <div style={{width:'min(420px,92vw)',padding:'clamp(24px,6vw,44px) clamp(20px,6vw,40px)',background:`linear-gradient(160deg,${BG3},${BG2})`,border:`1px solid ${BOR}`,borderRadius:16,boxShadow:'0 0 80px #C9A84C10'}}>
 <div style={{textAlign:'center',marginBottom:36}}>
 <img src="/logo.png" alt="Camarote Atmosfera" style={{width:220,display:'block',margin:'0 auto 12px'}}/>
