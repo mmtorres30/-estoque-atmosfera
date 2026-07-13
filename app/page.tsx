@@ -6,14 +6,14 @@ const LOC:Record<string,string>={central:'Estoque Central',frisa:'Estoque 1° An
 const UNIDS=['unidade(s)','caixa(s)','fardo(s)','barril(is)','garrafa(s)','lata(s)']
 const G='#B8863E',G2='#2B2420',G3='#8B6C2E',BG='#FAF7F2',BG2='#FFFFFF',BG3='#FFFFFF',BOR='#E5DFD3'
 const sI:any={width:'100%',height:38,border:`1px solid #E5DFD3`,borderRadius:6,padding:'0 12px',fontSize:13,background:'#FFFFFF',color:'#2B2420',outline:'none',boxSizing:'border-box' as any}
-const sC:any={background:'#FFFFFF',borderRadius:10,border:'1px solid #E5DFD3',padding:'20px 24px',marginBottom:16,boxShadow:'0 1px 3px rgba(43,36,32,0.06)'}
+const sC:any={background:'#FFFFFF',borderRadius:10,border:'1px solid #E5DFD3',borderTop:'3px solid #B8863E',padding:'20px 24px',marginBottom:16,boxShadow:'0 2px 8px rgba(43,36,32,0.08)'}
 const sB:any={height:36,padding:'0 18px',borderRadius:6,border:'1px solid #D9CFC0',cursor:'pointer',fontSize:12,fontWeight:600,background:'#FFFFFF',color:'#B8863E',letterSpacing:1}
 const sBP:any={height:36,padding:'0 18px',borderRadius:6,cursor:'pointer',fontSize:12,fontWeight:600,background:'linear-gradient(135deg,#8B6C2E,#B8863E)',color:'#FFFFFF',border:'none',letterSpacing:1}
 const LBL=(t:string)=><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>{t}</label>
 const TH=(h:string,i:number)=><th key={i} style={{textAlign:'left',padding:'8px 12px',fontSize:10,color:G,borderBottom:`1px solid ${BOR}`,textTransform:'uppercase' as any,letterSpacing:1.2}}>{h}</th>
 const TD=({v,s}:{v:any,s?:any})=><td style={{padding:'9px 12px',color:G2,borderBottom:'1px solid #EFE9DC',fontSize:13,...s}}>{v}</td>
 const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#5EEAA0']:t==='saida'?['#241A0E','#D8B36B']:t==='venda'?['#21152f','#C77DFF']:['#1a1622','#B4A8C4'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
-const LB=({l}:{l:string})=><span style={{background:'#1C1626',color:'#D8B36B',border:'1px solid #332B1F',borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[l]||l}</span>
+const LB=({l}:{l:string})=><span style={{background:'#F7EFDD',color:'#8B6C2E',border:'1px solid #E3CFA0',borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{LOC[l]||l}</span>
 
 
 
@@ -463,32 +463,32 @@ if(aba==='dashboard'){
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12,marginBottom:20}}>
       <div style={{background:'linear-gradient(135deg,#241A0E,#332512)',border:'1px solid #46341A',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#B49A6A',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Total em estoque</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#F5EEDD',letterSpacing:-1}}>{totalGeral.toLocaleString('pt-BR')}</div>
+        <div style={{fontSize:38,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#F5EEDD',letterSpacing:-1}}>{totalGeral.toLocaleString('pt-BR')}</div>
         <div style={{fontSize:11,color:'#8A7550',marginTop:4}}>unidades — todos os locais</div>
       </div>
       <div style={{background:'linear-gradient(135deg,#0D1F14,#0A170F)',border:'1px solid #1E3B26',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#4F9468',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Entradas hoje</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#5EEAA0',letterSpacing:-1}}>{entHoje}</div>
+        <div style={{fontSize:38,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#5EEAA0',letterSpacing:-1}}>{entHoje}</div>
         <div style={{fontSize:11,color:'#3A6B4A',marginTop:4}}>registros de entrada</div>
       </div>
       <div style={{background:'linear-gradient(135deg,#241A0E,#1C140A)',border:'1px solid #46341A',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#B49A6A',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Saídas hoje</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#D8B36B',letterSpacing:-1}}>{saiHoje}</div>
+        <div style={{fontSize:38,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#D8B36B',letterSpacing:-1}}>{saiHoje}</div>
         <div style={{fontSize:11,color:'#8A7550',marginTop:4}}>registros de saída</div>
       </div>
       <div style={{background:'linear-gradient(135deg,#171128,#100C1D)',border:'1px solid #34285A',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#8478B8',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Produtos ativos</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#A79AF0',letterSpacing:-1}}>{produtosUnicos.length}</div>
+        <div style={{fontSize:38,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#A79AF0',letterSpacing:-1}}>{produtosUnicos.length}</div>
         <div style={{fontSize:11,color:'#5C5290',marginTop:4}}>tipos de produto</div>
       </div>
       <div style={{background:'linear-gradient(135deg,#211530,#180F26)',border:'1px solid #4A2E6E',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#A98BD0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Vendas hoje</div>
-        <div style={{fontSize:38,fontWeight:700,color:'#C77DFF',letterSpacing:-1}}>{qtdVendasHoje}</div>
+        <div style={{fontSize:38,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#C77DFF',letterSpacing:-1}}>{qtdVendasHoje}</div>
         <div style={{fontSize:11,color:'#8A64B0',marginTop:4}}>registros de venda</div>
       </div>
       <div style={{background:'linear-gradient(135deg,#211530,#180F26)',border:'1px solid #4A2E6E',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#A98BD0',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Faturamento hoje</div>
-        <div style={{fontSize:32,fontWeight:700,color:'#C77DFF',letterSpacing:-1}}>{fmtR(fatHoje)}</div>
+        <div style={{fontSize:32,fontWeight:700,fontFamily:'Georgia,"Times New Roman",serif',color:'#C77DFF',letterSpacing:-1}}>{fmtR(fatHoje)}</div>
         <div style={{fontSize:11,color:'#8A64B0',marginTop:4}}>vendido nos bares hoje</div>
       </div>
     </div>
@@ -496,14 +496,14 @@ if(aba==='dashboard'){
       {locais.map(l=>{
         const tot=totLoc(l.key)
         const items=Object.entries(estLoc(l.key)).filter(([,v])=>v>0)
-        return <div key={l.key} style={{background:BG3,border:`1px solid ${tot>0?BOR:'#1a1608'}`,borderRadius:12,padding:'16px 18px'}}>
+        return <div key={l.key} style={{background:BG3,border:`1px solid ${tot>0?BOR:'#F0EBE0'}`,borderTop:`3px solid ${tot>0?'#B8863E':'#E5DFD3'}`,borderRadius:12,padding:'16px 18px',boxShadow:'0 1px 3px rgba(43,36,32,0.06)'}}>
           <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:10}}>
             <div>
               <div style={{fontSize:12,fontWeight:700,color:G2}}>{l.nome}</div>
               <div style={{fontSize:10,color:'#5a4a20',marginTop:2}}>{l.desc}</div>
             </div>
             <div style={{textAlign:'right'}}>
-              <div style={{fontSize:24,fontWeight:800,color:tot>0?G:'#3a3020'}}>{tot}</div>
+              <div style={{fontSize:24,fontWeight:800,fontFamily:'Georgia,"Times New Roman",serif',color:tot>0?G:'#B0A798'}}>{tot}</div>
               <div style={{fontSize:9,color:'#4a3a18'}}>unidades</div>
             </div>
           </div>
@@ -523,7 +523,7 @@ if(aba==='dashboard'){
       <div style={sC}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
           <p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>ÚLTIMAS MOVIMENTAÇÕES</p>
-          <span style={{fontSize:10,color:'#5a4a20',background:'#1a1200',border:'1px solid #2e2810',borderRadius:20,padding:'3px 10px'}}>{movs.length} total</span>
+          <span style={{fontSize:10,color:'#8B6C2E',background:'#F7EFDD',border:'1px solid #E3CFA0',borderRadius:20,padding:'3px 10px'}}>{movs.length} total</span>
         </div>
         {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
         <div style={{overflowX:'auto'}}>{movs.slice(0,showAllMovs?1000:10).map(m=>(
@@ -807,7 +807,8 @@ if(!user)return(
 return(
 <div style={{display:'flex',minHeight:'100vh',background:BG,fontFamily:'system-ui,sans-serif'}} className='app-root'>
 {menuOpen&&<div className='menu-overlay' onClick={()=>setMenuOpen(false)}></div>}<div className={'sidebar-desktop'+(menuOpen?' menu-open':'')} style={{width:220,minWidth:220,background:'#FFFFFF',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
-<img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
+<img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto 10px'}}/>
+<div style={{width:50,height:1,background:'linear-gradient(90deg,transparent,#B8863E,transparent)',margin:'0 auto'}}/>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
 {navItems.map(n=>(
