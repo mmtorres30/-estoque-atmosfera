@@ -12,7 +12,7 @@ const sBP:any={height:36,padding:'0 18px',borderRadius:6,cursor:'pointer',fontSi
 const LBL=(t:string)=><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>{t}</label>
 const TH=(h:string,i:number)=><th key={i} style={{textAlign:'left',padding:'8px 12px',fontSize:10,color:G,borderBottom:`1px solid ${BOR}`,textTransform:'uppercase' as any,letterSpacing:1.2}}>{h}</th>
 const TD=({v,s}:{v:any,s?:any})=><td style={{padding:'9px 12px',color:G2,borderBottom:'1px solid #1a1600',fontSize:13,...s}}>{v}</td>
-const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#4ade80']:t==='saida'?['#1a1200',G]:['#1a1200','#a0a0a0'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
+const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#4ade80']:t==='saida'?['#1a1200',G]:t==='venda'?['#1a0a2a','#c084fc']:['#1a1200','#a0a0a0'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
 const LB=({l}:{l:string})=><span style={{background:'#1a1200',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[l]||l}</span>
 
 
@@ -137,6 +137,43 @@ return <div style={{...sC,border:'1px solid #2a2a20'}}>
 </div>
 <div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}>
 <button style={sBP} onClick={submit}>↺ Registrar Devolução</button>
+</div>
+</div>
+}
+
+
+function VendaForm({orig,prods,onReg,onSuccess}:{orig:string,prods:any[],onReg:(t:string,d:any)=>Promise<boolean>,onSuccess:()=>void}){
+const [prod,setProd]=useState('')
+const [qty,setQty]=useState('')
+const [unid,setUnid]=useState('unidade(s)')
+const [vUnit,setVUnit]=useState('')
+const [vTot,setVTot]=useState('')
+const [obs,setObs]=useState('')
+const [dataVenda,setDataVenda]=useState('')
+const [erroVenda,setErroVenda]=useState('')
+const calcTot=(q:string,v:string)=>{const qn=parseFloat(q)||0,vn=unMaskMoeda(v);setVTot(qn&&vn?maskMoeda(String(Math.round(qn*vn*100))):'')}
+const submit=async()=>{
+if(!prod){setErroVenda('Selecione um produto');return}
+if(!qty||parseInt(qty)<1){setErroVenda('Informe a quantidade');return}
+setErroVenda('')
+const ok=await onReg('venda',{produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,valor_unitario:unMaskMoeda(vUnit),valor_total:unMaskMoeda(vTot),observacao:obs,data:dataVenda?new Date(dataVenda).toISOString():new Date().toISOString()})
+if(!ok){setErroVenda('Erro ao registrar venda');return}
+setProd('');setQty('');setUnid('unidade(s)');setVUnit('');setVTot('');setObs('');setErroVenda('');onSuccess()
+}
+return <div style={{...sC,border:'1px solid #2a2a20'}}>
+<p style={{fontSize:12,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:16}}>🛒 REGISTRAR VENDA</p>
+{erroVenda&&<div style={{background:'#1a0808',border:'1px solid #5a1010',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#fca5a5',marginBottom:14,display:'flex',alignItems:'center',gap:8}}><span style={{fontSize:16}}>⚠️</span>{erroVenda}</div>}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+<div>{LBL('PRODUTO')}<select style={sI} value={prod} onChange={e=>setProd(e.target.value)}><option value="">Selecione</option>{prods.map(p=><option key={p.id}>{p.nome}</option>)}</select></div>
+<div>{LBL('QUANTIDADE')}<input style={sI} value={qty} onChange={e=>{setQty(e.target.value);calcTot(e.target.value,vUnit)}} placeholder="Ex: 2"/></div>
+<div>{LBL('UNIDADE')}<select style={sI} value={unid} onChange={e=>setUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select></div>
+<div>{LBL('VALOR UNITÁRIO (R$)')}<input style={sI} value={vUnit} onChange={e=>{const m=maskMoeda(e.target.value);setVUnit(m);calcTot(qty,m)}} placeholder="R$ 0,00"/></div>
+<div>{LBL('VALOR TOTAL (R$)')}<input style={{...sI,opacity:0.7}} value={vTot} readOnly placeholder="Calculado automaticamente"/></div>
+<div>{LBL('DATA (opcional)')}<input type='date' style={sI} value={dataVenda} onChange={e=>setDataVenda(e.target.value)}/></div>
+<div style={{gridColumn:'1/-1'}}>{LBL('OBSERVAÇÃO')}<input style={sI} value={obs} onChange={e=>setObs(e.target.value)}/></div>
+</div>
+<div style={{display:'flex',justifyContent:'flex-end',marginTop:16}}>
+<button style={sBP} onClick={submit}>🛒 Registrar Venda</button>
 </div>
 </div>
 }
@@ -477,7 +514,7 @@ if(aba==='dashboard'){
         {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
         <div style={{overflowX:'auto'}}>{movs.slice(0,showAllMovs?1000:10).map(m=>(
           <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #1a1600'}}>
-            <div style={{width:8,height:8,borderRadius:'50%',background:m.tipo==='entrada'?'#4ade80':m.tipo==='saida'?G:'#a0a0a0',flexShrink:0}}/>
+            <div style={{width:8,height:8,borderRadius:'50%',background:m.tipo==='entrada'?'#4ade80':m.tipo==='saida'?G:m.tipo==='venda'?'#c084fc':'#a0a0a0',flexShrink:0}}/>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:12,color:G2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.produto}</div>
               <div style={{fontSize:10,color:'#5a4a20',marginTop:1}}>{LOC[m.origem]||m.origem} → {LOC[m.destino]||m.destino}</div>
@@ -515,7 +552,7 @@ if(aba==='entrada-central')return <>{canEdit('central')&&<EntradaForm dest="cent
 if(aba==='saida-central')return <>{canEdit('central')&&<SaidaForm orig="central" dests={[{value:'frisa',label:'1° Andar Frisa'},{value:'terceiro',label:'3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
 if(aba==='est-frisa')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 1° ANDAR FRISA</p><button style={sBP} onClick={()=>exportarExcel('frisa')}>📊 Exportar Excel</button></div><TblEst loc="frisa"/></div>{canEdit('frisa')&&<SaidaForm orig="frisa" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
 if(aba==='est-terceiro')return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — 3° ANDAR</p><button style={sBP} onClick={()=>exportarExcel('terceiro')}>📊 Exportar Excel</button></div><TblEst loc="terceiro"/></div>{canEdit('terceiro')&&<SaidaForm orig="terceiro" dests={[{value:'barfrisa',label:'Bar Frisa'},{value:'barboate',label:'Bar Boate'},{value:'barterceiro',label:'Bar 3° Andar'}]} prods={prods} onReg={reg} onSuccess={load}/>}</>
-if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><button style={sBP} onClick={()=>exportarExcel(k)}>📊 Exportar Excel</button></div><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
+if(aba.startsWith('bar-')){const k=aba.replace('bar-','');return <><div style={sC}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,margin:0}}>SALDO — {(LOC[k]||k).toUpperCase()}</p><button style={sBP} onClick={()=>exportarExcel(k)}>📊 Exportar Excel</button></div><TblEst loc={k}/></div>{canEdit(k)&&<><EntradaForm dest={k} emps={emps} prods={prods} onReg={reg}/><VendaForm orig={k} prods={prods} onReg={reg} onSuccess={load}/><DevolucaoForm orig={k} prods={prods} onReg={reg}/></>}</>}
 if(aba==='produtos')return <><ProdutoForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>PRODUTOS CADASTRADOS</p>{prods.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Codigo','Nome','Categoria','Unidade',''].map(TH)}</tr></thead><tbody>{prods.map(p=><tr key={p.id}><TD v={p.cod_produto||'-'}/><TD v={p.nome}/><TD v={p.categoria||'—'}/><TD v={p.unidade_padrao}/><TD v={canEdit('central')&&<div style={{display:'flex',gap:6}}><button onClick={()=>{setEditId(p.id);setEditCod(p.cod_produto||'');setEditNome(p.nome);setEditCat(p.categoria||'');setEditUnid(p.unidade_padrao||'unidade(s)')}} style={{...sB,height:26,padding:'0 10px',fontSize:11,background:'#1a2a0a',borderColor:'#4a8a2a',color:'#8ac84c'}}>Editar</button><button onClick={()=>delProd(p.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button></div>}/></tr>)}</tbody></table>}{editId&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.85)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}><div style={{background:'#111',border:'1px solid #C9A84C',borderRadius:10,padding:24,width:'90%',maxWidth:480,display:'flex',flexDirection:'column',gap:14}}><p style={{color:'#C9A84C',fontWeight:700,fontSize:13,letterSpacing:1,margin:0}}>EDITAR PRODUTO</p>{editMsg&&<p style={{color:'#8ac84c',fontSize:12,margin:0}}>{editMsg}</p>}{LBL('CODIGO')}<div style={{display:'flex',gap:8,alignItems:'center'}}><input style={{...sI,flex:1}} value={editCod} onChange={e=>setEditCod(e.target.value)} placeholder='Ex: 7891234'/><Scanner onScan={(c)=>setEditCod(c)}/></div>{LBL('NOME')}<input style={sI} value={editNome} onChange={e=>setEditNome(e.target.value)}/>{LBL('CATEGORIA')}<input style={sI} value={editCat} onChange={e=>setEditCat(e.target.value)}/>{LBL('UNIDADE')}<select style={sI} value={editUnid} onChange={e=>setEditUnid(e.target.value)}>{UNIDS.map(u=><option key={u}>{u}</option>)}</select><div style={{display:'flex',gap:10,justifyContent:'flex-end',marginTop:8}}><button style={sB} onClick={()=>setEditId(null)}>Cancelar</button><button style={sBP} onClick={saveEdit}>Salvar</button></div></div></div>}</div></>
 if(aba==='empresas')return <><EmpresaForm onAdd={load}/><div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>EMPRESAS CADASTRADAS</p>{emps.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma empresa</p>:<table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Cód.','CNPJ/CPF','Nome','Produto','Telefone','E-mail',''].map(TH)}</tr></thead><tbody>{emps.map(e=><tr key={e.id}>{[e.cod_produto,e.documento,e.nome,e.produto||'—',e.telefone||'—',e.email||'—'].map((v,i)=><TD key={i} v={v}/>)}<TD v={canEdit('central')&&<button onClick={()=>delEmp(e.id)} style={{...sB,height:26,padding:'0 10px',fontSize:11}}>Excluir</button>}/></tr>)}</tbody></table>}</div></>
 if(aba==='usuarios')return <><UsuarioForm onAdd={load}/><div style={sC}>
@@ -615,7 +652,7 @@ return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rows.length} r
 <input value={rDe} onChange={e=>setRDe(e.target.value)} type="date" style={{...sI,height:36,fontSize:11,width:150}}/>
 <input value={rAte} onChange={e=>setRAte(e.target.value)} type="date" style={{...sI,height:36,fontSize:11,width:150}}/>
 <select value={rLocal} onChange={e=>setRLocal(e.target.value)} style={{...sI,height:36,fontSize:11,width:180}}><option value="">Todos os locais</option>{Object.entries(LOC).map(([k,v])=><option key={k} value={k}>{v as string}</option>)}</select>
-<select value={rTipo} onChange={e=>setRTipo(e.target.value)} style={{...sI,height:36,fontSize:11,width:160}}><option value="">Todos os tipos</option><option value="entrada">Entrada</option><option value="saida">Saída</option><option value="transferencia">Transferência</option><option value="devolucao">Devolução</option></select>
+<select value={rTipo} onChange={e=>setRTipo(e.target.value)} style={{...sI,height:36,fontSize:11,width:160}}><option value="">Todos os tipos</option><option value="entrada">Entrada</option><option value="saida">Saída</option><option value="transferencia">Transferência</option><option value="devolucao">Devolução</option><option value="venda">Venda</option></select>
 </div>
 <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:8}}>
 <input value={rProd} onChange={e=>setRProd(e.target.value)} style={{...sI,height:36,fontSize:11,width:160}} placeholder="🔍 Produto..."/>
@@ -635,12 +672,12 @@ if(rDe&&new Date(m.data)<new Date(rDe))ok=false;
 if(rAte&&new Date(m.data)>new Date(rAte+'T23:59:59'))ok=false;
 return ok;
 });
-return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rFil.length} movimentação(ões) encontrada(s)</p>
+return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rFil.length} movimentação(ões) encontrada(s)</p>{rFil.some(m=>m.tipo==='venda')&&<p style={{fontSize:13,color:G2,marginBottom:8}}>💰 Total vendido: <strong style={{color:G}}>{fmtR(rFil.filter(m=>m.tipo==='venda').reduce((a,m)=>a+(m.valor_total||0),0))}</strong></p>}
 <div style={{overflowX:'auto'}}><table id="rel-table" style={{width:'100%',borderCollapse:'collapse'}}>
 <thead><tr>{['Data','Tipo','Produto','Qtd','Unid','Origem','Destino','NF','Responsável','Usuário','Obs'].map(h=><th key={h} style={{fontSize:10,color:G,letterSpacing:1,padding:'8px 10px',borderBottom:`1px solid ${BOR}`,textAlign:'left',whiteSpace:'nowrap'}}>{h}</th>)}</tr></thead>
 <tbody>{rFil.length===0?<tr><td colSpan={11} style={{textAlign:'center',padding:24,color:'#5a4a20',fontSize:13}}>Nenhuma movimentação encontrada</td></tr>:rFil.map(m=><tr key={m.id} style={{borderBottom:`1px solid ${BOR}22`}}>
 <td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap',color:'#e8e0d0'}}>{fdt(m.data)}</td>
-<td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:m.tipo==='entrada'?'#1a3a1a':m.tipo==='saida'?'#3a1a1a':m.tipo==='transferencia'?'#1a1a3a':'#2a2a1a',color:m.tipo==='entrada'?'#4aaa4a':m.tipo==='saida'?'#aa4a4a':m.tipo==='transferencia'?'#4a4aaa':'#aaaa4a',padding:'2px 8px',borderRadius:4,fontSize:10,whiteSpace:'nowrap'}}>{m.tipo}</span></td>
+<td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:m.tipo==='entrada'?'#1a3a1a':m.tipo==='saida'?'#3a1a1a':m.tipo==='transferencia'?'#1a1a3a':m.tipo==='venda'?'#2a1a3a':'#2a2a1a',color:m.tipo==='entrada'?'#4aaa4a':m.tipo==='saida'?'#aa4a4a':m.tipo==='transferencia'?'#4a4aaa':m.tipo==='venda'?'#c084fc':'#aaaa4a',padding:'2px 8px',borderRadius:4,fontSize:10,whiteSpace:'nowrap'}}>{m.tipo}</span></td>
 <td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.produto}</td>
 <td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.quantidade}</td>
 <td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.unidade}</td>
@@ -662,7 +699,7 @@ if(aba==='historico')return <>
   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
     <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>TIPO</label>
     <select style={sI} value={editMov.tipo} onChange={e=>setEditMov({...editMov,tipo:e.target.value})}>
-      <option value="entrada">entrada</option><option value="saida">saida</option><option value="devolucao">devolucao</option>
+      <option value="entrada">entrada</option><option value="saida">saida</option><option value="devolucao">devolucao</option><option value="venda">venda</option>
     </select></div>
     <div><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>DATA</label>
     <input type="datetime-local" style={sI} value={editMov.data?.slice(0,16)||''} onChange={e=>setEditMov({...editMov,data:e.target.value})}/></div>
