@@ -4,16 +4,16 @@ import * as XLSX from 'xlsx'
 import Scanner from './components/Scanner'
 const LOC:Record<string,string>={central:'Estoque Central',frisa:'Estoque 1° Andar',terceiro:'Estoque 3° Andar',barfrisa:'Bar Frisa',barboate:'Bar Boate',barterceiro:'Bar 3° Andar',empresa:'Fornecedora'}
 const UNIDS=['unidade(s)','caixa(s)','fardo(s)','barril(is)','garrafa(s)','lata(s)']
-const G='#D8B36B',G2='#F5EEDD',G3='#9C8FB0',BG='#0D0A12',BG2='#171220',BG3='#1C1626',BOR='#3A2F4D'
-const sI:any={width:'100%',height:38,border:`1px solid #3A2F4D`,borderRadius:6,padding:'0 12px',fontSize:13,background:'#171220',color:'#F5EEDD',outline:'none',boxSizing:'border-box' as any}
-const sC:any={background:'#1C1626',borderRadius:10,border:'1px solid #3A2F4D',padding:'20px 24px',marginBottom:16}
-const sB:any={height:36,padding:'0 18px',borderRadius:6,border:'1px solid #46394F',cursor:'pointer',fontSize:12,fontWeight:600,background:'#171220',color:'#D8B36B',letterSpacing:1}
-const sBP:any={height:36,padding:'0 18px',borderRadius:6,cursor:'pointer',fontSize:12,fontWeight:600,background:'linear-gradient(135deg,#9A7A3E,#D8B36B)',color:'#0D0A12',border:'none',letterSpacing:1}
+const G='#B8863E',G2='#2B2420',G3='#8B6C2E',BG='#FAF7F2',BG2='#FFFFFF',BG3='#FFFFFF',BOR='#E5DFD3'
+const sI:any={width:'100%',height:38,border:`1px solid #E5DFD3`,borderRadius:6,padding:'0 12px',fontSize:13,background:'#FFFFFF',color:'#2B2420',outline:'none',boxSizing:'border-box' as any}
+const sC:any={background:'#FFFFFF',borderRadius:10,border:'1px solid #E5DFD3',padding:'20px 24px',marginBottom:16,boxShadow:'0 1px 3px rgba(43,36,32,0.06)'}
+const sB:any={height:36,padding:'0 18px',borderRadius:6,border:'1px solid #D9CFC0',cursor:'pointer',fontSize:12,fontWeight:600,background:'#FFFFFF',color:'#B8863E',letterSpacing:1}
+const sBP:any={height:36,padding:'0 18px',borderRadius:6,cursor:'pointer',fontSize:12,fontWeight:600,background:'linear-gradient(135deg,#8B6C2E,#B8863E)',color:'#FFFFFF',border:'none',letterSpacing:1}
 const LBL=(t:string)=><label style={{fontSize:10,color:G,display:'block',marginBottom:4,letterSpacing:1}}>{t}</label>
 const TH=(h:string,i:number)=><th key={i} style={{textAlign:'left',padding:'8px 12px',fontSize:10,color:G,borderBottom:`1px solid ${BOR}`,textTransform:'uppercase' as any,letterSpacing:1.2}}>{h}</th>
-const TD=({v,s}:{v:any,s?:any})=><td style={{padding:'9px 12px',color:G2,borderBottom:'1px solid #1a1600',fontSize:13,...s}}>{v}</td>
-const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#5EEAA0']:t==='saida'?['#241A0E',G]:t==='venda'?['#21152f','#C77DFF']:['#1a1622','#B4A8C4'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
-const LB=({l}:{l:string})=><span style={{background:'#1C1626',color:G,border:`1px solid ${BOR}`,borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[l]||l}</span>
+const TD=({v,s}:{v:any,s?:any})=><td style={{padding:'9px 12px',color:G2,borderBottom:'1px solid #EFE9DC',fontSize:13,...s}}>{v}</td>
+const Bdg=({t}:{t:string})=>{const c=t==='entrada'?['#0d2010','#5EEAA0']:t==='saida'?['#241A0E','#D8B36B']:t==='venda'?['#21152f','#C77DFF']:['#1a1622','#B4A8C4'];return <span style={{background:c[0],color:c[1],border:`1px solid ${c[1]}33`,borderRadius:20,padding:'2px 10px',fontSize:11,fontWeight:600}}>{t==='devolucao'?'devolução':t}</span>}
+const LB=({l}:{l:string})=><span style={{background:'#1C1626',color:'#D8B36B',border:'1px solid #332B1F',borderRadius:20,padding:'2px 10px',fontSize:11}}>{LOC[l]||l}</span>
 
 
 
@@ -397,7 +397,7 @@ const r=await fetch('/api/estoques',{method:'DELETE',headers:{'Content-Type':'ap
 if(r.ok){showT('Produto removido!');load()}else showT('Erro ao remover',true)
 }
 if(!items.length)return <p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhum produto em estoque</p>
-return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{(podeEditar?['Produto','Quantidade','Ações']:['Produto','Quantidade']).map(TH)}</tr></thead><tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/>{podeEditar&&<TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>editarEst(p,q)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>excluirEst(p)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button></div>}/>}</tr>)}</tbody></table>
+return <table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{(podeEditar?['Produto','Quantidade','Ações']:['Produto','Quantidade']).map(TH)}</tr></thead><tbody>{items.map(([p,q])=><tr key={p}><TD v={p}/><TD v={<strong style={{color:G2}}>{q} un.</strong>}/>{podeEditar&&<TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>editarEst(p,q)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>excluirEst(p)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#DC2626',borderColor:'#F3B4B0'}}>✕</button></div>}/>}</tr>)}</tbody></table>
 }
 const navItems=[
 {id:'dashboard',icon:'⊞',label:'Painel'},
@@ -463,7 +463,7 @@ if(aba==='dashboard'){
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12,marginBottom:20}}>
       <div style={{background:'linear-gradient(135deg,#241A0E,#332512)',border:'1px solid #46341A',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#B49A6A',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Total em estoque</div>
-        <div style={{fontSize:38,fontWeight:700,color:G2,letterSpacing:-1}}>{totalGeral.toLocaleString('pt-BR')}</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#F5EEDD',letterSpacing:-1}}>{totalGeral.toLocaleString('pt-BR')}</div>
         <div style={{fontSize:11,color:'#8A7550',marginTop:4}}>unidades — todos os locais</div>
       </div>
       <div style={{background:'linear-gradient(135deg,#0D1F14,#0A170F)',border:'1px solid #1E3B26',borderRadius:12,padding:'20px 18px'}}>
@@ -473,7 +473,7 @@ if(aba==='dashboard'){
       </div>
       <div style={{background:'linear-gradient(135deg,#241A0E,#1C140A)',border:'1px solid #46341A',borderRadius:12,padding:'20px 18px'}}>
         <div style={{fontSize:10,color:'#B49A6A',textTransform:'uppercase' as any,letterSpacing:1.5,marginBottom:10}}>Saídas hoje</div>
-        <div style={{fontSize:38,fontWeight:700,color:G,letterSpacing:-1}}>{saiHoje}</div>
+        <div style={{fontSize:38,fontWeight:700,color:'#D8B36B',letterSpacing:-1}}>{saiHoje}</div>
         <div style={{fontSize:11,color:'#8A7550',marginTop:4}}>registros de saída</div>
       </div>
       <div style={{background:'linear-gradient(135deg,#171128,#100C1D)',border:'1px solid #34285A',borderRadius:12,padding:'20px 18px'}}>
@@ -527,7 +527,7 @@ if(aba==='dashboard'){
         </div>
         {movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação ainda</p>:
         <div style={{overflowX:'auto'}}>{movs.slice(0,showAllMovs?1000:10).map(m=>(
-          <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #1a1600'}}>
+          <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #EFE9DC'}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:m.tipo==='entrada'?'#5EEAA0':m.tipo==='saida'?G:m.tipo==='venda'?'#C77DFF':'#B4A8C4',flexShrink:0}}/>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:12,color:G2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.produto}</div>
@@ -561,7 +561,7 @@ if(aba==='dashboard'){
       </div>
     </div>
     <div style={sC}>
-      <p style={{fontSize:11,fontWeight:700,color:'#C77DFF',letterSpacing:1.5,marginBottom:14}}>🛒 VENDAS POR BAR</p>
+      <p style={{fontSize:11,fontWeight:700,color:'#9333EA',letterSpacing:1.5,marginBottom:14}}>🛒 VENDAS POR BAR</p>
       {(()=>{
         const vendas=movs.filter(m=>m.tipo==='venda')
         const bares=['barfrisa','barboate','barterceiro']
@@ -577,17 +577,17 @@ if(aba==='dashboard'){
           })
           const totalBar=vb.reduce((a,m)=>a+(m.valor_total||0),0)
           const itens=Object.entries(porProduto).sort((a,b)=>b[1].valor-a[1].valor)
-          return <div key={b} style={{background:BG3,border:'1px solid #4A2E6E',borderRadius:12,padding:'16px 18px'}}>
+          return <div key={b} style={{background:BG3,border:'1px solid #D4C2E8',borderRadius:12,padding:'16px 18px',boxShadow:'0 1px 3px rgba(43,36,32,0.06)'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-              <div style={{fontSize:12,fontWeight:700,color:'#C77DFF'}}>{LOC[b]||b}</div>
-              <div style={{fontSize:13,fontWeight:700,color:'#C77DFF'}}>{fmtR(totalBar)}</div>
+              <div style={{fontSize:12,fontWeight:700,color:'#9333EA'}}>{LOC[b]||b}</div>
+              <div style={{fontSize:13,fontWeight:700,color:'#9333EA'}}>{fmtR(totalBar)}</div>
             </div>
-            <div style={{borderTop:'1px solid #34204A',paddingTop:8}}>
+            <div style={{borderTop:'1px solid #F0E6F8',paddingTop:8}}>
               {itens.map(([p,v])=>(
                 <div key={p} style={{display:'grid',gridTemplateColumns:'1fr auto auto',gap:10,padding:'4px 0',alignItems:'center'}}>
-                  <span style={{fontSize:11,color:'#C7B3E0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p}</span>
-                  <span style={{fontSize:11,color:'#8A64B0',textAlign:'right' as any}}>{v.qtd} un.</span>
-                  <span style={{fontSize:11,fontWeight:600,color:'#C77DFF',textAlign:'right' as any,minWidth:70}}>{fmtR(v.valor)}</span>
+                  <span style={{fontSize:11,color:'#4A3B57',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p}</span>
+                  <span style={{fontSize:11,color:'#7C5A9E',textAlign:'right' as any}}>{v.qtd} un.</span>
+                  <span style={{fontSize:11,fontWeight:600,color:'#9333EA',textAlign:'right' as any,minWidth:70}}>{fmtR(v.valor)}</span>
                 </div>
               ))}
             </div>
@@ -628,7 +628,7 @@ if(aba==='usuarios')return <><UsuarioForm onAdd={load}/><div style={sC}>
 <option value="barterceiro">Bar 3° Andar</option>
 </select>
 <button onClick={async()=>{const r=await fetch('/api/usuarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id,bloqueado:!u.bloqueado,senha:u.senha,nome:u.nome,nome_completo:u.nome_completo,perfil:u.perfil})});if(r.ok){showT(u.bloqueado?'Desbloqueado!':'Bloqueado!');load()}else showT('Erro',true)}} style={{...sB,height:28,padding:'0 10px',fontSize:11,color:u.bloqueado?'#4ade80':'#f87171',borderColor:u.bloqueado?'#1a5a20':'#5a1010'}}>{u.bloqueado?'🔓':'🔒'}</button>
-{u.username!=='admin'&&<button onClick={async()=>{if(confirm('Excluir usuário?')){const r=await fetch('/api/usuarios',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id})});if(r.ok){showT('Excluído');load()}else showT('Erro',true)}}} style={{...sB,height:28,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button>}
+{u.username!=='admin'&&<button onClick={async()=>{if(confirm('Excluir usuário?')){const r=await fetch('/api/usuarios',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u.id})});if(r.ok){showT('Excluído');load()}else showT('Erro',true)}}} style={{...sB,height:28,padding:'0 8px',fontSize:11,color:'#DC2626',borderColor:'#F3B4B0'}}>✕</button>}
 </div>}/>
 </tr>)}</tbody>
 </table>}
@@ -726,11 +726,11 @@ return <><p style={{fontSize:11,color:'#5a4a20',marginBottom:8}}>{rFil.length} m
 <div style={{overflowX:'auto'}}><table id="rel-table" style={{width:'100%',borderCollapse:'collapse'}}>
 <thead><tr>{['Data','Tipo','Produto','Qtd','Unid','Origem','Destino','NF','Responsável','Usuário','Obs'].map(h=><th key={h} style={{fontSize:10,color:G,letterSpacing:1,padding:'8px 10px',borderBottom:`1px solid ${BOR}`,textAlign:'left',whiteSpace:'nowrap'}}>{h}</th>)}</tr></thead>
 <tbody>{rFil.length===0?<tr><td colSpan={11} style={{textAlign:'center',padding:24,color:'#5a4a20',fontSize:13}}>Nenhuma movimentação encontrada</td></tr>:rFil.map(m=><tr key={m.id} style={{borderBottom:`1px solid ${BOR}22`}}>
-<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap',color:'#e8e0d0'}}>{fdt(m.data)}</td>
+<td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap',color:'#2B2420'}}>{fdt(m.data)}</td>
 <td style={{fontSize:11,padding:'7px 10px'}}><span style={{background:m.tipo==='entrada'?'#1a3a1a':m.tipo==='saida'?'#3a1a1a':m.tipo==='transferencia'?'#1a1a3a':m.tipo==='venda'?'#34204A':'#241C10',color:m.tipo==='entrada'?'#4aaa4a':m.tipo==='saida'?'#aa4a4a':m.tipo==='transferencia'?'#4a4aaa':m.tipo==='venda'?'#C77DFF':'#B4A8C4',padding:'2px 8px',borderRadius:4,fontSize:10,whiteSpace:'nowrap'}}>{m.tipo}</span></td>
-<td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.produto}</td>
-<td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.quantidade}</td>
-<td style={{fontSize:11,padding:'7px 10px',color:'#e8e0d0'}}>{m.unidade}</td>
+<td style={{fontSize:11,padding:'7px 10px',color:'#2B2420'}}>{m.produto}</td>
+<td style={{fontSize:11,padding:'7px 10px',color:'#2B2420'}}>{m.quantidade}</td>
+<td style={{fontSize:11,padding:'7px 10px',color:'#2B2420'}}>{m.unidade}</td>
 <td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{LOC[m.origem]||m.origem||'-'}</td>
 <td style={{fontSize:11,padding:'7px 10px',whiteSpace:'nowrap'}}>{LOC[m.destino]||m.destino||'-'}</td>
 <td style={{fontSize:11,padding:'7px 10px'}}>{m.nf_numero||'-'}</td>
@@ -781,11 +781,11 @@ if(aba==='historico')return <>
     <button style={sBP} onClick={salvarEdicao}>✓ Salvar alterações</button>
   </div>
 </div>}
-<div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs',''].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/><TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>setEditMov(m)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>delMov(m.id)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#f87171',borderColor:'#5a1010'}}>✕</button></div>}/></tr>)}</tbody></table></div>}</div>
+<div style={sC}><p style={{fontSize:11,fontWeight:700,color:G,letterSpacing:1.5,marginBottom:14}}>HISTÓRICO COMPLETO</p>{movs.length===0?<p style={{color:'#5a4a20',fontSize:13,textAlign:'center',padding:24}}>Nenhuma movimentação</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><thead><tr>{['Tipo','Data','Produto','Qtd','Origem','Destino','NF','Obs',''].map(TH)}</tr></thead><tbody>{movs.map(m=><tr key={m.id}><TD v={<Bdg t={m.tipo}/>}/><TD v={fdt(m.data)} s={{whiteSpace:'nowrap',fontSize:11}}/><TD v={m.produto}/><TD v={`${m.quantidade} ${m.unidade}`}/><TD v={<LB l={m.origem}/>}/><TD v={<LB l={m.destino}/>}/><TD v={m.nf_numero||'—'}/><TD v={m.observacao||'—'} s={{color:'#6a5a30',fontSize:11}}/><TD v={<div style={{display:'flex',gap:4}}><button onClick={()=>setEditMov(m)} style={{...sB,height:26,padding:'0 8px',fontSize:11}}>✏️</button><button onClick={()=>delMov(m.id)} style={{...sB,height:26,padding:'0 8px',fontSize:11,color:'#DC2626',borderColor:'#F3B4B0'}}>✕</button></div>}/></tr>)}</tbody></table></div>}</div>
 </>}
 if(!user)return(
-<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#241A0E 0%,${BG} 70%)`}}>
-<div style={{width:'min(420px,92vw)',padding:'clamp(24px,6vw,44px) clamp(20px,6vw,40px)',background:`linear-gradient(160deg,${BG3},${BG2})`,border:`1px solid ${BOR}`,borderRadius:16,boxShadow:'0 0 80px #C9A84C10'}}>
+<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:`radial-gradient(ellipse at center,#F3E8D3 0%,${BG} 70%)`}}>
+<div style={{width:'min(420px,92vw)',padding:'clamp(24px,6vw,44px) clamp(20px,6vw,40px)',background:'linear-gradient(160deg,#FFFFFF,#FBF6EC)',border:`1px solid ${BOR}`,borderRadius:16,boxShadow:'0 4px 40px rgba(184,134,62,0.15)'}}>
 <div style={{textAlign:'center',marginBottom:36}}>
 <img src="/logo.png" alt="Camarote Atmosfera" style={{width:220,display:'block',margin:'0 auto 12px'}}/>
 <div style={{width:80,height:1,background:`linear-gradient(90deg,transparent,${G},transparent)`,margin:'0 auto 14px'}}/>
@@ -799,14 +799,14 @@ if(!user)return(
 <label style={{fontSize:10,color:G,display:'block',marginBottom:5,letterSpacing:2}}>SENHA</label>
 <input type="password" value={lp} onChange={e=>setLp(e.target.value)} onKeyDown={e=>e.key==='Enter'&&login()} style={{...sI,height:42}} placeholder="Digite sua senha"/>
 </div>
-<button onClick={login} style={{width:'100%',height:46,background:`linear-gradient(135deg,${G3},${G},${G3})`,color:'#0a0800',border:'none',borderRadius:8,fontSize:13,fontWeight:800,cursor:'pointer',letterSpacing:3,textTransform:'uppercase'}}>ENTRAR</button>
+<button onClick={login} style={{width:'100%',height:46,background:`linear-gradient(135deg,${G3},${G},${G3})`,color:'#FFFFFF',border:'none',borderRadius:8,fontSize:13,fontWeight:800,cursor:'pointer',letterSpacing:3,textTransform:'uppercase'}}>ENTRAR</button>
 
 </div>
 </div>
 )
 return(
 <div style={{display:'flex',minHeight:'100vh',background:BG,fontFamily:'system-ui,sans-serif'}} className='app-root'>
-{menuOpen&&<div className='menu-overlay' onClick={()=>setMenuOpen(false)}></div>}<div className={'sidebar-desktop'+(menuOpen?' menu-open':'')} style={{width:220,minWidth:220,background:'#111',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
+{menuOpen&&<div className='menu-overlay' onClick={()=>setMenuOpen(false)}></div>}<div className={'sidebar-desktop'+(menuOpen?' menu-open':'')} style={{width:220,minWidth:220,background:'#FFFFFF',borderRight:`1px solid ${BOR}`,display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0}}><div style={{padding:'20px 16px',borderBottom:`1px solid ${BOR}`,textAlign:'center'}}>
 <img src="/logo.png" alt="Atmosfera" style={{width:160,display:'block',margin:'0 auto'}}/>
 </div>
 <div style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
