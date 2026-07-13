@@ -156,8 +156,9 @@ const submit=async()=>{
 if(!prod){setErroVenda('Selecione um produto');return}
 if(!qty||parseInt(qty)<1){setErroVenda('Informe a quantidade');return}
 setErroVenda('')
-const ok=await onReg('venda',{produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,valor_unitario:unMaskMoeda(vUnit),valor_total:unMaskMoeda(vTot),observacao:obs,data:dataVenda?new Date(dataVenda).toISOString():new Date().toISOString()})
-if(!ok){setErroVenda('Erro ao registrar venda');return}
+const r=await fetch('/api/movimentos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:'venda',produto:prod,quantidade:parseInt(qty)||0,unidade:unid,origem:orig,valor_unitario:unMaskMoeda(vUnit),valor_total:unMaskMoeda(vTot),observacao:obs,data:dataVenda?new Date(dataVenda).toISOString():new Date().toISOString()})})
+const d=await r.json()
+if(!r.ok){setErroVenda(d.error||'Erro ao registrar venda');return}
 setProd('');setQty('');setUnid('unidade(s)');setVUnit('');setVTot('');setObs('');setErroVenda('');onSuccess()
 }
 return <div style={{...sC,border:'1px solid #2a2a20'}}>
